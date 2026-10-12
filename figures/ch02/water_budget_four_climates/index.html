@@ -1,0 +1,108 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Monthly P, ET, Q and change in storage in four climates (Figure 2.7)</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 2 · Watersheds and the Water Budget</p><h1>Monthly P, ET, Q and change in storage in four climates (Figure 2.7)</h1><p>Schematic monthly climatologies for four climates, with storage trough defining the water-year start.</p><p class=mut>Source: Chapter 2 draft; author data arrays from the code comment (truncated at Word&#x27;s 2048-character comment limit); plotting completed from the figure in the draft</p><p class=mut>No external data file: values are small and embedded in the code.</p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Monthly P, ET, Q and change in storage in four climates (Figure 2.7) (Python output)'><p class=mut>Code: <a href='water_budget_four_climates.py'>water_budget_four_climates.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Monthly P, ET, Q and change in storage in four climates (Figure 2.7)
+Chapter 2 draft; author data arrays from the code comment (truncated at Word&#x27;s 2048-character comment limit); plotting completed from the figure in the draft
+Run: python3 water_budget_four_climates.py -&gt; figure_python.png&quot;&quot;&quot;
+import numpy as np, matplotlib
+matplotlib.use(&quot;Agg&quot;); import matplotlib.pyplot as plt
+
+months = list(&quot;JFMAMJJASOND&quot;)
+climates = [
+ (&quot;Temperate (NH)&quot;, &quot;Hubbard Brook, NH&quot;, [95,88,100,105,118,112,116,116,84,120,124,108], [5,8,22,48,84,108,120,104,78,34,12,5],
+  [0.95,0.85,1.05,2.30,1.35,0.85,0.5,0.35,0.30,0.55,0.85,0.95], &quot;snowmelt-fed spring Q, summer ET drawdown; lowest storage early autumn&quot;),
+ (&quot;Monsoon (NH)&quot;, &quot;Peninsular India&quot;, [10,12,14,22,40,150,300,290,180,70,20,8], [35,45,70,95,110,120,115,110,95,70,50,40],
+  [0.55,0.35,0.25,0.2,0.2,0.9,2.6,2.7,1.8,1.0,0.75,0.65], &quot;dry season empties storage; trough just before monsoon onset&quot;),
+ (&quot;Temperate (SH)&quot;, &quot;S. Chile / Tasmania&quot;, [55,50,70,95,150,175,180,150,120,90,70,55], [110,100,78,50,26,14,12,20,40,66,90,105],
+  [0.75,0.6,0.75,1.0,1.6,2.2,2.3,1.9,1.4,1.0,0.85,0.75], &quot;seasons flipped from NH; trough in austral autumn&quot;),
+ (&quot;Savanna (SH)&quot;, &quot;N. Australia (Top End)&quot;, [280,270,210,60,20,8,5,6,18,70,150,240], [130,125,120,95,78,66,62,66,82,100,115,128],
+  [2.6,2.7,2.4,1.3,0.7,0.45,0.35,0.3,0.3,0.45,0.9,1.7], &quot;long dry season; trough at end of &#x27;the Dry&#x27;&quot;),
+]
+
+mfull = [&quot;Jan&quot;,&quot;Feb&quot;,&quot;Mar&quot;,&quot;Apr&quot;,&quot;May&quot;,&quot;Jun&quot;,&quot;Jul&quot;,&quot;Aug&quot;,&quot;Sep&quot;,&quot;Oct&quot;,&quot;Nov&quot;,&quot;Dec&quot;]
+C_P, C_ET, C_Q, C_S = &quot;#78A9D6&quot;, &quot;#D55E00&quot;, &quot;#0072B2&quot;, &quot;#009E73&quot;
+x = np.arange(12)
+fig, axes = plt.subplots(2, 2, figsize=(12.5, 8.6))
+for ax, (name, place, P, ET, Qs, note) in zip(axes.flat, climates):
+    P, ET, Qs = map(lambda v: np.array(v, float), (P, ET, Qs))
+    Q = Qs * ((P.sum() - ET.sum()) / Qs.sum())          # scale Q so the annual budget closes (sum P = sum ET + sum Q)
+    cs = np.cumsum(P - ET - Q); S = cs - cs.min()        # change in storage, offset so its trough = 0
+    trough = int(np.argmin(cs)); wy = (trough + 1) % 12  # water year starts the month after the storage trough
+    ax.bar(x, P, width=0.72, color=C_P, alpha=0.55, label=&quot;P&quot;, zorder=1)
+    ax.plot(x, ET, &quot;-o&quot;, color=C_ET, lw=2, ms=3.5, label=&quot;ET&quot;, zorder=3)
+    ax.plot(x, Q, &quot;-s&quot;, color=C_Q, lw=2, ms=3.5, label=&quot;Q&quot;, zorder=3)
+    ax.set_xticks(x); ax.set_xticklabels(months); ax.set_ylabel(&quot;flux  (mm month$^{-1}$)&quot;)
+    ax2 = ax.twinx(); ax2.fill_between(x, 0, S, color=C_S, alpha=0.15, lw=0); ax2.plot(x, S, &quot;--&quot;, color=C_S, lw=2, label=&quot;S&quot;)
+    ax2.plot(trough, 0, &quot;v&quot;, color=C_S, mec=&quot;k&quot;, ms=10); ax2.set_ylabel(&quot;change in storage (mm)&quot;, color=C_S); ax2.set_ylim(-0.05 * S.max(), S.max() * 1.25)
+    ax.axvline(wy - 0.5, color=&quot;k&quot;, ls=&quot;--&quot;, lw=1.6)
+    ax.text(wy - 0.4, ax.get_ylim()[1] * 0.97, f&quot;water year\nstarts {mfull[wy]} 1&quot;, va=&quot;top&quot;, fontsize=9, fontweight=&quot;bold&quot;, bbox=dict(boxstyle=&quot;round&quot;, fc=&quot;w&quot;))
+    ax.text(-0.4, ax.get_ylim()[1] * 0.04, note, fontsize=7.5, style=&quot;italic&quot;, color=&quot;0.3&quot;)
+    ax.set_title(f&quot;{name}\n{place}   (P {P.sum():.0f} · ET {ET.sum():.0f} · Q {Q.sum():.0f} mm/yr, RC {100 * Q.sum() / P.sum():.0f}%)&quot;, loc=&quot;left&quot;, fontsize=9.5)
+fig.text(0.5, 0.012, &quot;Schematic monthly climatologies with a closed annual budget (ΣP = ΣET + ΣQ). Change in storage = cumulative (P − ET − Q), offset so its trough = 0.\nBars: P; orange: ET; blue: Q; green dashed: S; vertical dashed line: water-year start (storage trough).&quot;, ha=&quot;center&quot;, fontsize=8.5, color=&quot;0.3&quot;)
+fig.tight_layout(rect=(0, 0.05, 1, 1)); fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Monthly P, ET, Q and change in storage in four climates (Figure 2.7) (R output)'><p class=mut>Code: <a href='water_budget_four_climates.R'>water_budget_four_climates.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Monthly P, ET, Q and change in storage in four climates (Figure 2.7)
+# Chapter 2 draft; author data arrays from the code comment (truncated at Word&#x27;s 2048-character comment limit); plotting completed from the figure in the draft
+# Run: Rscript water_budget_four_climates.R -&gt; figure_r.png (base R, no packages)
+months &lt;- strsplit(&quot;JFMAMJJASOND&quot;, &quot;&quot;)[[1]]; mfull &lt;- month.abb
+climates &lt;- list(
+  list(name = &quot;Temperate (NH)&quot;, place = &quot;Hubbard Brook, NH&quot;, P = c(95,88,100,105,118,112,116,116,84,120,124,108), ET = c(5,8,22,48,84,108,120,104,78,34,12,5), Q = c(0.95,0.85,1.05,2.3,1.35,0.85,0.5,0.35,0.3,0.55,0.85,0.95), note = &quot;snowmelt-fed spring Q, summer ET drawdown; lowest storage early autumn&quot;),
+  list(name = &quot;Monsoon (NH)&quot;, place = &quot;Peninsular India&quot;, P = c(10,12,14,22,40,150,300,290,180,70,20,8), ET = c(35,45,70,95,110,120,115,110,95,70,50,40), Q = c(0.55,0.35,0.25,0.2,0.2,0.9,2.6,2.7,1.8,1.0,0.75,0.65), note = &quot;dry season empties storage; trough just before monsoon onset&quot;),
+  list(name = &quot;Temperate (SH)&quot;, place = &quot;S. Chile / Tasmania&quot;, P = c(55,50,70,95,150,175,180,150,120,90,70,55), ET = c(110,100,78,50,26,14,12,20,40,66,90,105), Q = c(0.75,0.6,0.75,1.0,1.6,2.2,2.3,1.9,1.4,1.0,0.85,0.75), note = &quot;seasons flipped from NH; trough in austral autumn&quot;),
+  list(name = &quot;Savanna (SH)&quot;, place = &quot;N. Australia (Top End)&quot;, P = c(280,270,210,60,20,8,5,6,18,70,150,240), ET = c(130,125,120,95,78,66,62,66,82,100,115,128), Q = c(2.6,2.7,2.4,1.3,0.7,0.45,0.35,0.3,0.3,0.45,0.9,1.7), note = &quot;long dry season; trough at end of &#x27;the Dry&#x27;&quot;))
+png(&quot;figure_r.png&quot;, width = 1875, height = 1290, res = 150)
+par(mfrow = c(2, 2), mar = c(3.2, 4.6, 3.6, 4.6), las = 1, oma = c(2, 0, 0, 0))
+for (cl in climates) {
+  P &lt;- cl$P; ET &lt;- cl$ET; Q &lt;- cl$Q * ((sum(P) - sum(ET)) / sum(cl$Q))
+  cs &lt;- cumsum(P - ET - Q); S &lt;- cs - min(cs); trough &lt;- which.min(cs); wy &lt;- trough %% 12 + 1     # water year starts month after trough
+  ytop &lt;- max(P, ET, Q) * 1.08
+  bp &lt;- barplot(P, col = adjustcolor(&quot;#78A9D6&quot;, 0.55), border = NA, names.arg = months, ylim = c(0, ytop), ylab = &quot;flux  (mm/month)&quot;, space = 0.28)
+  lines(bp, ET, type = &quot;o&quot;, col = &quot;#D55E00&quot;, lwd = 2, pch = 19, cex = 0.7); lines(bp, Q, type = &quot;o&quot;, col = &quot;#0072B2&quot;, lwd = 2, pch = 15, cex = 0.7)
+  abline(v = (bp[wy] + bp[(wy + 10) %% 12 + 1]) / 2 + ifelse(wy == 1, 6.5, 0) * 0, lty = 2, lwd = 1.6)
+  text(bp[wy] - 0.4, ytop * 0.97, sprintf(&quot;water year\nstarts %s 1&quot;, mfull[wy]), adj = c(0, 1), font = 2, cex = 0.75)
+  text(bp[1] - 0.4, ytop * 0.04, cl$note, adj = c(0, 0), font = 3, cex = 0.6, col = &quot;grey30&quot;)
+  mtext(sprintf(&quot;%s, %s   (P %.0f . ET %.0f . Q %.0f mm/yr, RC %.0f%%)&quot;, cl$name, cl$place, sum(P), sum(ET), sum(Q), 100 * sum(Q) / sum(P)), side = 3, adj = 0, line = 0.6, cex = 0.7)
+  par(new = TRUE); plot(bp, S, type = &quot;n&quot;, axes = FALSE, xlab = &quot;&quot;, ylab = &quot;&quot;, ylim = c(-0.05 * max(S), max(S) * 1.25), xlim = range(bp) + c(-0.7, 0.7))
+  polygon(c(bp, rev(bp)), c(S, rep(0, 12)), col = adjustcolor(&quot;#009E73&quot;, 0.15), border = NA); lines(bp, S, lty = 2, lwd = 2, col = &quot;#009E73&quot;)
+  points(bp[trough], 0, pch = 25, bg = &quot;#009E73&quot;, cex = 1.6); axis(4, col.axis = &quot;#009E73&quot;, col = &quot;#009E73&quot;); mtext(&quot;change in storage (mm)&quot;, side = 4, line = 3, col = &quot;#009E73&quot;, cex = 0.7, las = 0)
+}
+mtext(&quot;Schematic monthly climatologies with a closed annual budget (sum P = sum ET + sum Q). Change in storage = cumulative (P - ET - Q), offset so its trough = 0.&quot;, side = 1, outer = TRUE, cex = 0.6, col = &quot;grey30&quot;)
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Monthly P, ET, Q and change in storage in four climates (Figure 2.7) (MATLAB output)'><p class=mut>Code: <a href='water_budget_four_climates.m'>water_budget_four_climates.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Monthly P, ET, Q and change in storage in four climates (Figure 2.7)
+% Chapter 2 draft; author data arrays from the code comment (truncated at Word&#x27;s 2048-character comment limit); plotting completed from the figure in the draft
+% Run: run water_budget_four_climates.m -&gt; figure_matlab.png (MATLAB or GNU Octave)
+clear; close all;
+months = &#x27;JFMAMJJASOND&#x27;; mfull = {&#x27;Jan&#x27;,&#x27;Feb&#x27;,&#x27;Mar&#x27;,&#x27;Apr&#x27;,&#x27;May&#x27;,&#x27;Jun&#x27;,&#x27;Jul&#x27;,&#x27;Aug&#x27;,&#x27;Sep&#x27;,&#x27;Oct&#x27;,&#x27;Nov&#x27;,&#x27;Dec&#x27;};
+cl = struct(&#x27;name&#x27;, {}, &#x27;place&#x27;, {}, &#x27;P&#x27;, {}, &#x27;ET&#x27;, {}, &#x27;Q&#x27;, {}, &#x27;note&#x27;, {});
+cl(1) = struct(&#x27;name&#x27;, &#x27;Temperate (NH)&#x27;, &#x27;place&#x27;, &#x27;Hubbard Brook, NH&#x27;, &#x27;P&#x27;, [95 88 100 105 118 112 116 116 84 120 124 108], &#x27;ET&#x27;, [5 8 22 48 84 108 120 104 78 34 12 5], &#x27;Q&#x27;, [0.95 0.85 1.05 2.3 1.35 0.85 0.5 0.35 0.3 0.55 0.85 0.95], &#x27;note&#x27;, &#x27;snowmelt-fed spring Q, summer ET drawdown; lowest storage early autumn&#x27;);
+cl(2) = struct(&#x27;name&#x27;, &#x27;Monsoon (NH)&#x27;, &#x27;place&#x27;, &#x27;Peninsular India&#x27;, &#x27;P&#x27;, [10 12 14 22 40 150 300 290 180 70 20 8], &#x27;ET&#x27;, [35 45 70 95 110 120 115 110 95 70 50 40], &#x27;Q&#x27;, [0.55 0.35 0.25 0.2 0.2 0.9 2.6 2.7 1.8 1.0 0.75 0.65], &#x27;note&#x27;, &#x27;dry season empties storage; trough just before monsoon onset&#x27;);
+cl(3) = struct(&#x27;name&#x27;, &#x27;Temperate (SH)&#x27;, &#x27;place&#x27;, &#x27;S. Chile / Tasmania&#x27;, &#x27;P&#x27;, [55 50 70 95 150 175 180 150 120 90 70 55], &#x27;ET&#x27;, [110 100 78 50 26 14 12 20 40 66 90 105], &#x27;Q&#x27;, [0.75 0.6 0.75 1.0 1.6 2.2 2.3 1.9 1.4 1.0 0.85 0.75], &#x27;note&#x27;, &#x27;seasons flipped from NH; trough in austral autumn&#x27;);
+cl(4) = struct(&#x27;name&#x27;, &#x27;Savanna (SH)&#x27;, &#x27;place&#x27;, &#x27;N. Australia (Top End)&#x27;, &#x27;P&#x27;, [280 270 210 60 20 8 5 6 18 70 150 240], &#x27;ET&#x27;, [130 125 120 95 78 66 62 66 82 100 115 128], &#x27;Q&#x27;, [2.6 2.7 2.4 1.3 0.7 0.45 0.35 0.3 0.3 0.45 0.9 1.7], &#x27;note&#x27;, &#x27;long dry season; trough at end of &#x27;&#x27;the Dry&#x27;&#x27;&#x27;);
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 1250 860], &#x27;Color&#x27;, &#x27;w&#x27;);
+x = 1:12;
+for i = 1:4
+  P = cl(i).P; ET = cl(i).ET; Q = cl(i).Q * ((sum(P) - sum(ET)) / sum(cl(i).Q));
+  cs = cumsum(P - ET - Q); S = cs - min(cs); [~, trough] = min(cs); wy = mod(trough, 12) + 1;
+  ytop = max([P ET Q]) * 1.08;
+  pos = [0.07 + 0.49 * mod(i - 1, 2), 0.57 - 0.46 * (i &gt; 2) + 0.0, 0.34, 0.33];
+  ax1 = axes(&#x27;Position&#x27;, pos); hold on;
+  for k = 1:12, patch(&#x27;XData&#x27;, [k-0.36 k+0.36 k+0.36 k-0.36]&#x27;, &#x27;YData&#x27;, [0 0 P(k) P(k)]&#x27;, &#x27;FaceColor&#x27;, [0.737 0.84 0.92], &#x27;EdgeColor&#x27;, &#x27;none&#x27;); end
+  plot(x, ET, &#x27;-o&#x27;, &#x27;Color&#x27;, [0.835 0.369 0], &#x27;LineWidth&#x27;, 2, &#x27;MarkerSize&#x27;, 4, &#x27;MarkerFaceColor&#x27;, [0.835 0.369 0]);
+  plot(x, Q, &#x27;-s&#x27;, &#x27;Color&#x27;, [0 0.447 0.698], &#x27;LineWidth&#x27;, 2, &#x27;MarkerSize&#x27;, 4, &#x27;MarkerFaceColor&#x27;, [0 0.447 0.698]);
+  plot([wy - 0.5 wy - 0.5], [0 ytop], &#x27;k--&#x27;, &#x27;LineWidth&#x27;, 1.4);
+  text(wy - 0.4, ytop * 0.97, sprintf(&#x27;water year\nstarts %s 1&#x27;, mfull{wy}), &#x27;FontWeight&#x27;, &#x27;bold&#x27;, &#x27;FontSize&#x27;, 8, &#x27;VerticalAlignment&#x27;, &#x27;top&#x27;);
+  text(0.7, ytop * 0.04, cl(i).note, &#x27;FontAngle&#x27;, &#x27;italic&#x27;, &#x27;FontSize&#x27;, 7, &#x27;Color&#x27;, [0.3 0.3 0.3]);
+  set(ax1, &#x27;XTick&#x27;, x, &#x27;XTickLabel&#x27;, num2cell(months), &#x27;Box&#x27;, &#x27;off&#x27;); xlim([0.4 12.6]); ylim([0 ytop]); ylabel(&#x27;flux (mm/month)&#x27;);
+  title(sprintf(&#x27;%s, %s  (P %.0f, ET %.0f, Q %.0f mm/yr, RC %.0f%%)&#x27;, cl(i).name, cl(i).place, sum(P), sum(ET), sum(Q), 100 * sum(Q) / sum(P)), &#x27;FontSize&#x27;, 9);
+  ax2 = axes(&#x27;Position&#x27;, pos, &#x27;Color&#x27;, &#x27;none&#x27;, &#x27;YAxisLocation&#x27;, &#x27;right&#x27;, &#x27;XTick&#x27;, [], &#x27;Box&#x27;, &#x27;off&#x27;); hold on;
+  patch(&#x27;XData&#x27;, [x fliplr(x)]&#x27;, &#x27;YData&#x27;, [S zeros(1, 12)]&#x27;, &#x27;FaceColor&#x27;, [0 0.62 0.451], &#x27;FaceAlpha&#x27;, 0.15, &#x27;EdgeColor&#x27;, &#x27;none&#x27;);
+  plot(x, S, &#x27;--&#x27;, &#x27;Color&#x27;, [0 0.62 0.451], &#x27;LineWidth&#x27;, 2); plot(trough, 0, &#x27;v&#x27;, &#x27;MarkerFaceColor&#x27;, [0 0.62 0.451], &#x27;MarkerEdgeColor&#x27;, &#x27;k&#x27;, &#x27;MarkerSize&#x27;, 8);
+  xlim([0.4 12.6]); ylim([-0.05 * max(S) max(S) * 1.25]); ylabel(&#x27;change in storage (mm)&#x27;); set(ax2, &#x27;YColor&#x27;, [0 0.62 0.451]);
+end
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

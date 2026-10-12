@@ -1,0 +1,150 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Figure 3.11: Temperature versus saturation vapor pressure</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 3 · Precipitation</p><h1>Figure 3.11: Temperature versus saturation vapor pressure</h1><p>Saturation vapor pressure curve with dew-point and relative-humidity annotations.</p><p class=mut>Source: Chapter 3 draft; author code (Figure 3.11 code file, truncated at Word&#x27;s 2048-character limit) completed from the figure image</p><div class=note>Author code was cut off at 2048 characters in the Word file; the remainder was reconstructed to match the draft image. Saturation vapor pressure uses the Bolton (1980) formula.</div><p class=mut>No external data file: values are small and embedded in the code.</p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Figure 3.11: Temperature versus saturation vapor pressure (Python output)'><p class=mut>Code: <a href='vapor_pressure.py'>vapor_pressure.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Chapter 3, Figure 3.11 - Temperature versus saturation vapor pressure (dew point and RH).
+Starts from the code in &#x27;Code for Figure 3.11.docx&#x27; (J. Gannon); the pasted code stopped part-way through the
+annotations, so the remaining labels were completed to match the figure in the chapter draft.&quot;&quot;&quot;
+import numpy as np
+import matplotlib.pyplot as plt
+
+def es(T):
+    &quot;&quot;&quot;Saturation vapor pressure over liquid water (hPa), Bolton (1980); T in deg C.&quot;&quot;&quot;
+    return 6.112 * np.exp(17.67 * T / (T + 243.5))
+
+def dewpoint(e):
+    x = np.log(e / 6.112)
+    return 243.5 * x / (17.67 - x)
+
+T0, e0 = 25.0, 20.0
+Td = dewpoint(e0)
+RH = 100 * e0 / es(T0)
+T = np.linspace(-20, 40, 600)
+
+fig, ax = plt.subplots(figsize=(11, 8))
+ax.fill_between(T, es(T), 80, color=&quot;#fbe3e3&quot;)
+ax.fill_between(T, 0, es(T), color=&quot;#deebf7&quot;)
+ax.plot(T, es(T), &quot;k&quot;, lw=2.5)
+ax.set_xlim(-20, 40); ax.set_ylim(0, 80)
+ax.set_xlabel(&quot;Temperature (°C)&quot;, fontsize=14, labelpad=30)
+ax.set_ylabel(&quot;Water-vapor pressure (hPa)&quot;, fontsize=14)
+ax.set_title(&quot;Figure 3.11: Temperature versus saturation vapor pressure.&quot;, fontsize=15, fontweight=&quot;bold&quot;, pad=14)
+ax.text(31.5, 68, r&quot;$e_{s}(T)$&quot;, fontsize=15)
+
+# Parcel and cooling path at constant vapor pressure
+ax.plot([T0], [e0], &quot;ko&quot;, ms=9, zorder=5)
+ax.annotate(&quot;&quot;, xy=(Td, e0), xytext=(T0 - 0.6, e0),
+            arrowprops=dict(arrowstyle=&quot;-|&gt;&quot;, lw=3, color=&quot;k&quot;, mutation_scale=18))
+ax.plot([Td], [e0], &quot;ko&quot;, ms=9, zorder=5)
+ax.plot([-20, Td], [e0, e0], &quot;k&quot;, ls=(0, (2, 3)), lw=1)
+ax.plot([Td, Td], [0, e0], &quot;k--&quot;, lw=1)
+ax.plot([T0, T0], [0, e0], &quot;k--&quot;, lw=1)
+ax.text(T0, e0 + 2.5, f&quot;RH ≈ {RH:.0f}%&quot;, ha=&quot;center&quot;, fontsize=12)
+ax.text((T0 + Td) / 2, e0 - 3, &quot;air parcel cools at\nnearly constant\nvapor pressure&quot;,
+        ha=&quot;center&quot;, va=&quot;top&quot;, style=&quot;italic&quot;, fontsize=11, zorder=6, bbox=dict(fc=&quot;#deebf7&quot;, ec=&quot;none&quot;, pad=2))
+
+# Dew point annotation
+ax.annotate(&quot;saturation reached:\nRH = 100%,\ndew point&quot;, xy=(Td - 0.4, e0 + 0.6), xytext=(-8, 27),
+            fontsize=11, ha=&quot;center&quot;, arrowprops=dict(arrowstyle=&quot;-|&gt;&quot;, color=&quot;k&quot;))
+
+# Below dew point: vapor pressure follows es(T) (condensation)
+Tc = np.linspace(Td, -14, 100)
+ax.plot(Tc, es(Tc), color=&quot;#cc0000&quot;, lw=3.5, zorder=4)
+ax.annotate(&quot;&quot;, xy=(-15, es(-15)), xytext=(-13, es(-13)),
+            arrowprops=dict(arrowstyle=&quot;-|&gt;&quot;, color=&quot;#cc0000&quot;, lw=3, mutation_scale=18))
+ax.text(-19, 6.5, &quot;condensation begins;\nvapor pressure limited\nto $e_s(T)$ as parcel\ncools further&quot;,
+        color=&quot;#cc0000&quot;, style=&quot;italic&quot;, fontsize=11, va=&quot;bottom&quot;)
+
+# ---- completed from here (the original code was cut off) ----
+ax.text(-7.5, 56, &quot;supersaturated conditions\n($e &gt; e_s$; beyond scope)&quot;, color=&quot;#cc0000&quot;, fontsize=14, ha=&quot;center&quot;)
+ax.text(34, 31, &quot;unsaturated\nair parcels\n($e &lt; e_s$)&quot;, color=&quot;#1f5fbf&quot;, fontsize=14, ha=&quot;center&quot;)
+ax.annotate(&quot;&quot;, xy=(6, 33), xytext=(19, 33), arrowprops=dict(arrowstyle=&quot;-|&gt;&quot;, color=&quot;#2740c0&quot;, lw=2))
+ax.text(12.5, 35, &quot;RH increases\nas T decreases&quot;, color=&quot;#2740c0&quot;, style=&quot;italic&quot;, fontsize=13, ha=&quot;center&quot;)
+ax.text(Td, -5.5, f&quot;$T_d$ = {Td:.1f}°C&quot;, ha=&quot;center&quot;, va=&quot;top&quot;, fontsize=11)
+ax.text(T0, -5.5, &quot;25°C&quot;, ha=&quot;center&quot;, va=&quot;top&quot;, fontsize=11)
+fig.text(0.5, 0.025, r&quot;$RH = \dfrac{e}{e_s(T)} \times 100\%$   (actual vapor pressure $e$ / saturation vapor pressure $e_s$)&quot;,
+         ha=&quot;center&quot;, fontsize=13, bbox=dict(boxstyle=&quot;round&quot;, fc=&quot;white&quot;))
+fig.subplots_adjust(bottom=0.2)
+fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Figure 3.11: Temperature versus saturation vapor pressure (R output)'><p class=mut>Code: <a href='vapor_pressure.R'>vapor_pressure.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Chapter 3, Figure 3.11 - Temperature versus saturation vapor pressure (dew point and RH)
+es &lt;- function(T) 6.112 * exp(17.67 * T / (T + 243.5))      # hPa, Bolton (1980), T in deg C
+dewpoint &lt;- function(e) { x &lt;- log(e / 6.112); 243.5 * x / (17.67 - x) }
+T0 &lt;- 25; e0 &lt;- 20
+Td &lt;- dewpoint(e0); RH &lt;- 100 * e0 / es(T0)
+T &lt;- seq(-20, 40, length.out = 600)
+
+png(&quot;figure_r.png&quot;, width = 1650, height = 1200, res = 150)
+par(mar = c(6, 5, 4, 1))
+plot(NA, xlim = c(-20, 40), ylim = c(0, 80), xlab = &quot;&quot;, ylab = &quot;Water-vapor pressure (hPa)&quot;,
+     main = &quot;Figure 3.11: Temperature versus saturation vapor pressure.&quot;, cex.lab = 1.3, xaxs = &quot;i&quot;, yaxs = &quot;i&quot;)
+polygon(c(T, rev(T)), c(es(T), rep(80, length(T))), col = &quot;#fbe3e3&quot;, border = NA)
+polygon(c(T, rev(T)), c(es(T), rep(0, length(T))), col = &quot;#deebf7&quot;, border = NA)
+lines(T, es(T), lwd = 4)
+box()
+mtext(&quot;Temperature (°C)&quot;, side = 1, line = 4, cex = 1.3)
+text(33, 68, expression(e[s](T)), cex = 1.6)
+# parcel cooling at constant vapor pressure
+arrows(T0 - 0.6, e0, Td + 0.6, e0, lwd = 4, length = 0.15)
+points(c(T0, Td), c(e0, e0), pch = 19, cex = 1.8)
+lines(c(-20, Td), c(e0, e0), lty = 3)
+segments(c(Td, T0), 0, c(Td, T0), e0, lty = 2)
+text(T0, e0 + 2.5, sprintf(&quot;RH ≈ %.0f%%&quot;, RH), cex = 1.1)
+text((T0 + Td) / 2, e0 - 3, &quot;air parcel cools at\nnearly constant\nvapor pressure&quot;, font = 3, adj = c(0.5, 1))
+arrows(-3, 28, Td - 0.4, e0 + 0.6, length = 0.1)
+text(-8, 28, &quot;saturation reached:\nRH = 100%,\ndew point&quot;)
+Tc &lt;- seq(Td, -14, length.out = 100)
+lines(Tc, es(Tc), col = &quot;#cc0000&quot;, lwd = 5)
+arrows(-13, es(-13), -15, es(-15), col = &quot;#cc0000&quot;, lwd = 4, length = 0.12)
+text(-19.5, 6.5, &quot;condensation begins;\nvapor pressure limited\nto e_s(T) as parcel\ncools further&quot;, col = &quot;#cc0000&quot;, font = 3, adj = c(0, 0))
+text(-7.5, 58, &quot;supersaturated conditions&quot;, col = &quot;#cc0000&quot;, cex = 1.2)
+text(-7.5, 53, expression(paste(&quot;(&quot;, e &gt; e[s], &quot;; beyond scope)&quot;)), col = &quot;#cc0000&quot;, cex = 1.2)
+text(34, 34, &quot;unsaturated&quot;, col = &quot;#1f5fbf&quot;, cex = 1.2)
+text(34, 30, &quot;air parcels&quot;, col = &quot;#1f5fbf&quot;, cex = 1.2)
+text(34, 26, expression(paste(&quot;(&quot;, e &lt; e[s], &quot;)&quot;)), col = &quot;#1f5fbf&quot;, cex = 1.2)
+arrows(19, 33, 6, 33, col = &quot;#2740c0&quot;, lwd = 2, length = 0.12)
+text(12.5, 36, &quot;RH increases\nas T decreases&quot;, col = &quot;#2740c0&quot;, font = 3)
+text(Td, -9, sprintf(&quot;Td = %.1f°C&quot;, Td), xpd = NA); text(T0, -9, &quot;25°C&quot;, xpd = NA)
+mtext(expression(paste(&quot;RH = &quot;, e / e[s](T), &quot; × 100%   (actual vapor pressure e / saturation vapor pressure &quot;, e[s], &quot;)&quot;)),
+      side = 1, line = 5.3, cex = 0.95)
+dev.off()
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Figure 3.11: Temperature versus saturation vapor pressure (MATLAB output)'><p class=mut>Code: <a href='vapor_pressure.m'>vapor_pressure.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Chapter 3, Figure 3.11 - Temperature versus saturation vapor pressure (dew point and RH)
+es = @(T) 6.112 * exp(17.67 * T ./ (T + 243.5));       % hPa, Bolton (1980), T in deg C
+dewpoint = @(e) 243.5 * log(e/6.112) ./ (17.67 - log(e/6.112));
+T0 = 25; e0 = 20;
+Td = dewpoint(e0); RH = 100 * e0 / es(T0);
+T = linspace(-20, 40, 600);
+
+fig = figure(&#x27;Position&#x27;,[100 100 1100 800]); hold on
+patch([T fliplr(T)], [es(T) 80*ones(size(T))], [0.984 0.89 0.89], &#x27;EdgeColor&#x27;,&#x27;none&#x27;);
+patch([T fliplr(T)], [es(T) zeros(size(T))], [0.871 0.922 0.969], &#x27;EdgeColor&#x27;,&#x27;none&#x27;);
+plot(T, es(T), &#x27;k&#x27;, &#x27;LineWidth&#x27;, 2.5);
+axis([-20 40 0 80]); box on
+xlabel(&#x27;Temperature (°C)&#x27;, &#x27;FontSize&#x27;, 13); ylabel(&#x27;Water-vapor pressure (hPa)&#x27;, &#x27;FontSize&#x27;, 13);
+title(&#x27;Figure 3.11: Temperature versus saturation vapor pressure.&#x27;, &#x27;FontSize&#x27;, 14);
+text(31.5, 68, &#x27;e_s(T)&#x27;, &#x27;FontSize&#x27;, 15);
+% parcel cooling at constant vapor pressure
+plot([T0 Td+0.6], [e0 e0], &#x27;k-&#x27;, &#x27;LineWidth&#x27;, 3);
+plot(Td+0.6+[1.2 0 1.2], e0+[0.8 0 -0.8], &#x27;k-&#x27;, &#x27;LineWidth&#x27;, 3);   % arrow head
+plot([T0 Td], [e0 e0], &#x27;ko&#x27;, &#x27;MarkerFaceColor&#x27;,&#x27;k&#x27;, &#x27;MarkerSize&#x27;, 8);
+plot([-20 Td], [e0 e0], &#x27;k:&#x27;);
+plot([Td Td], [0 e0], &#x27;k--&#x27;); plot([T0 T0], [0 e0], &#x27;k--&#x27;);
+text(T0, e0+2.5, sprintf(&#x27;RH ≈ %.0f%%&#x27;, RH), &#x27;HorizontalAlignment&#x27;,&#x27;center&#x27;, &#x27;FontSize&#x27;, 12);
+text((T0+Td)/2, e0-6, {&#x27;air parcel cools at&#x27;,&#x27;nearly constant&#x27;,&#x27;vapor pressure&#x27;}, &#x27;HorizontalAlignment&#x27;,&#x27;center&#x27;, &#x27;FontAngle&#x27;,&#x27;italic&#x27;);
+annotation_x = [Td-0.4 -3]; plot(annotation_x, [e0+0.6 28], &#x27;k-&#x27;);
+text(-8, 28, {&#x27;saturation reached:&#x27;,&#x27;RH = 100%,&#x27;,&#x27;dew point&#x27;}, &#x27;HorizontalAlignment&#x27;,&#x27;center&#x27;);
+Tc = linspace(Td, -14, 100);
+plot(Tc, es(Tc), &#x27;Color&#x27;, [0.8 0 0], &#x27;LineWidth&#x27;, 3.5);
+text(-19.5, 8, {&#x27;condensation begins;&#x27;,&#x27;vapor pressure limited&#x27;,&#x27;to e_s(T) as parcel&#x27;,&#x27;cools further&#x27;}, &#x27;Color&#x27;,[0.8 0 0], &#x27;FontAngle&#x27;,&#x27;italic&#x27;);
+text(-7.5, 56, {&#x27;supersaturated conditions&#x27;,&#x27;(e &gt; e_s; beyond scope)&#x27;}, &#x27;Color&#x27;,[0.8 0 0], &#x27;FontSize&#x27;, 13, &#x27;HorizontalAlignment&#x27;,&#x27;center&#x27;);
+text(34, 31, {&#x27;unsaturated&#x27;,&#x27;air parcels&#x27;,&#x27;(e &lt; e_s)&#x27;}, &#x27;Color&#x27;,[0.12 0.37 0.75], &#x27;FontSize&#x27;, 13, &#x27;HorizontalAlignment&#x27;,&#x27;center&#x27;);
+plot([19 6], [33 33], &#x27;-&#x27;, &#x27;Color&#x27;,[0.15 0.25 0.75], &#x27;LineWidth&#x27;, 2);
+text(12.5, 36.5, {&#x27;RH increases&#x27;,&#x27;as T decreases&#x27;}, &#x27;Color&#x27;,[0.15 0.25 0.75], &#x27;FontAngle&#x27;,&#x27;italic&#x27;, &#x27;HorizontalAlignment&#x27;,&#x27;center&#x27;);
+text(Td, -9, sprintf(&#x27;T_d = %.1f°C&#x27;, Td), &#x27;HorizontalAlignment&#x27;,&#x27;center&#x27;); text(T0, -9, &#x27;25°C&#x27;, &#x27;HorizontalAlignment&#x27;,&#x27;center&#x27;);
+text(10, -13, &#x27;RH = e / e_s(T) × 100%   (actual vapor pressure e / saturation vapor pressure e_s)&#x27;, &#x27;HorizontalAlignment&#x27;,&#x27;center&#x27;);
+print(fig, &#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

@@ -1,0 +1,56 @@
+% Types of stream hydrographs and driving processes (Figure 2.3)
+% Chapter 2 draft; author code (comment in Chapter 2 docx, truncated at Word's 2048-character comment limit) completed from the figure image in the draft
+% Run: run hydrograph_types.m -> figure_matlab.png (MATLAB or GNU Octave)
+clear; close all;
+rf = @(t, t0, tp, peak, rec, base) base + (t >= t0 & t < tp) .* peak .* (3 * ((t - t0) / (tp - t0)).^2 - 2 * ((t - t0) / (tp - t0)).^3) ...
+     + (t >= tp) .* (peak .* exp(-(t - tp) / rec));
+t{1} = linspace(0, 6, 1500);    q{1} = rf(t{1}, 0.75, 1.0, 0.78, 0.22, 0.12);
+t{2} = linspace(0, 10, 1500);   q{2} = rf(t{2}, 1.0, 2.7, 0.30, 3.0, 0.12);
+t{3} = linspace(0.5, 6.5, 1500); q{3} = rf(t{3}, 0.8, 2.0, 0.90, 1.1, 0.03);
+t{4} = linspace(0, 6, 3000);    q{4} = rf(t{4}, 0.4, 0.85, 0.55, 0.28, 0.18);
+q{4} = q{4} + 0.035 * sin(2 * pi * (t{4} - 0.45)) .* (1 - exp(-max(t{4} - 0.85, 0) / 0.4)) .* (t{4} > 0.85);
+figure('Visible', 'off', 'Position', [100 100 1100 640], 'Color', 'w');
+subplot(2, 2, 1); hold on;
+patch('XData', [0.7 1.0 1.0 0.7]', 'YData', [0 0 0.98 0.98]', 'FaceColor', [0.737 0.851 0.937], 'EdgeColor', 'none');
+patch('XData', [t{1} fliplr(t{1})]', 'YData', [q{1} zeros(size(q{1}))]', 'FaceColor', [0.812 0.89 0.784], 'EdgeColor', 'none');
+plot(t{1}, q{1}, '-', 'Color', [0.122 0.373 0.545], 'LineWidth', 2.5);
+xlim([0 6]); ylim([0 1.05]); set(gca, 'YTick', []);
+xlabel('TIME (DAYS)', 'FontWeight', 'bold', 'FontSize', 8); ylabel('FLOW (E.G., M³/S)', 'FontWeight', 'bold', 'FontSize', 8);
+title('A  Flashy stream (storm response)', 'FontSize', 10, 'FontWeight', 'bold');
+text(1.3, 0.9, {'FLASHY', 'PEAK'}, 'FontWeight', 'bold', 'FontSize', 7, 'HorizontalAlignment', 'center'); plot([1.3 1.02], [0.8300000000000001 0.9], 'k-'); plot(1.02, 0.9, 'k.', 'MarkerSize', 8);
+text(0.45, 0.5, {'RAPID', 'RISE'}, 'FontWeight', 'bold', 'FontSize', 7, 'HorizontalAlignment', 'center'); plot([0.45 0.85], [0.43 0.55], 'k-'); plot(0.85, 0.55, 'k.', 'MarkerSize', 8);
+text(2.0, 0.5, {'QUICK', 'RECESSION'}, 'FontWeight', 'bold', 'FontSize', 7, 'HorizontalAlignment', 'center'); plot([2.0 1.45], [0.43 0.3], 'k-'); plot(1.45, 0.3, 'k.', 'MarkerSize', 8);
+box off;
+subplot(2, 2, 2); hold on;
+patch('XData', [1.0 1.8 1.8 1.0]', 'YData', [0 0 0.98 0.98]', 'FaceColor', [0.737 0.851 0.937], 'EdgeColor', 'none');
+patch('XData', [t{2} fliplr(t{2})]', 'YData', [q{2} zeros(size(q{2}))]', 'FaceColor', [0.812 0.89 0.784], 'EdgeColor', 'none');
+plot(t{2}, q{2}, '-', 'Color', [0.122 0.373 0.545], 'LineWidth', 2.5);
+xlim([0 10]); ylim([0 1.05]); set(gca, 'YTick', []);
+xlabel('TIME (DAYS)', 'FontWeight', 'bold', 'FontSize', 8); ylabel('FLOW', 'FontWeight', 'bold', 'FontSize', 8);
+title('B  Non-flashy stream (storm response)', 'FontSize', 10, 'FontWeight', 'bold');
+text(1.6, 0.9, {'MODERATE', 'RISE'}, 'FontWeight', 'bold', 'FontSize', 7, 'HorizontalAlignment', 'center'); plot([1.6 2.0], [0.8300000000000001 0.28], 'k-'); plot(2.0, 0.28, 'k.', 'MarkerSize', 8);
+text(7.6, 0.62, {'SLOW', 'RECESSION'}, 'FontWeight', 'bold', 'FontSize', 7, 'HorizontalAlignment', 'center'); plot([7.6 6.2], [0.55 0.2], 'k-'); plot(6.2, 0.2, 'k.', 'MarkerSize', 8);
+box off;
+subplot(2, 2, 3); hold on;
+patch('XData', [t{3} fliplr(t{3})]', 'YData', [q{3} zeros(size(q{3}))]', 'FaceColor', [0.812 0.89 0.784], 'EdgeColor', 'none');
+plot(t{3}, q{3}, '-', 'Color', [0.122 0.373 0.545], 'LineWidth', 2.5);
+xlim([0.5 6.5]); ylim([0 1.05]); set(gca, 'YTick', []);
+set(gca, 'XTick', [1 2, 3, 4, 5, 6], 'XTickLabel', {'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'});
+xlabel('TIME (MONTHS, APRIL–SEPTEMBER)', 'FontWeight', 'bold', 'FontSize', 8); ylabel('FLOW', 'FontWeight', 'bold', 'FontSize', 8);
+title('C  Snowmelt-dominated stream', 'FontSize', 10, 'FontWeight', 'bold');
+text(3.2, 0.95, {'SNOWMELT', 'PEAK'}, 'FontWeight', 'bold', 'FontSize', 7, 'HorizontalAlignment', 'center'); plot([3.2 2.1], [0.8799999999999999 0.9], 'k-'); plot(2.1, 0.9, 'k.', 'MarkerSize', 8);
+text(5.0, 0.55, {'SLOW, MULTI-MONTH', 'RECESSION'}, 'FontWeight', 'bold', 'FontSize', 7, 'HorizontalAlignment', 'center'); plot([5.0 4.0], [0.48000000000000004 0.2], 'k-'); plot(4.0, 0.2, 'k.', 'MarkerSize', 8);
+box off;
+subplot(2, 2, 4); hold on;
+patch('XData', [0.4 0.7 0.7 0.4]', 'YData', [0 0 0.98 0.98]', 'FaceColor', [0.737 0.851 0.937], 'EdgeColor', 'none');
+patch('XData', [t{4} fliplr(t{4})]', 'YData', [q{4} zeros(size(q{4}))]', 'FaceColor', [0.812 0.89 0.784], 'EdgeColor', 'none');
+plot(t{4}, q{4}, '-', 'Color', [0.122 0.373 0.545], 'LineWidth', 2.5);
+xlim([0 6]); ylim([0 1.05]); set(gca, 'YTick', []);
+xlabel('TIME (DAYS)', 'FontWeight', 'bold', 'FontSize', 8); ylabel('FLOW', 'FontWeight', 'bold', 'FontSize', 8);
+title('D  Evapotranspiration signal on baseflow', 'FontSize', 10, 'FontWeight', 'bold');
+text(2.5, 0.95, {'NIGHTTIME', 'MAX'}, 'FontWeight', 'bold', 'FontSize', 7, 'HorizontalAlignment', 'center'); plot([2.5 1.7], [0.8799999999999999 0.4], 'k-'); plot(1.7, 0.4, 'k.', 'MarkerSize', 8);
+text(3.4, 0.12, {'AFTERNOON', 'MIN'}, 'FontWeight', 'bold', 'FontSize', 7, 'HorizontalAlignment', 'center'); plot([3.4 2.2], [0.04999999999999999 0.2], 'k-'); plot(2.2, 0.2, 'k.', 'MarkerSize', 8);
+text(4.6, 0.95, {'DIURNAL', 'ET CYCLE'}, 'FontWeight', 'bold', 'FontSize', 7, 'HorizontalAlignment', 'center'); plot([4.6 3.7], [0.8799999999999999 0.36], 'k-'); plot(3.7, 0.36, 'k.', 'MarkerSize', 8);
+box off;
+annotation('textbox', [0 0.95 1 0.05], 'String', 'Types of stream hydrographs and driving processes', 'EdgeColor', 'none', 'HorizontalAlignment', 'center', 'FontWeight', 'bold', 'FontSize', 13);
+print('-dpng', '-r150', 'figure_matlab.png');

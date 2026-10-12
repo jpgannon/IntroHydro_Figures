@@ -1,0 +1,8 @@
+{
+ "slug": "hyetograph_hourly",
+ "ch": "ch03",
+ "title": "Figure 3.16: Hourly hyetograph for a 24-hour period",
+ "source": "Chapter 3 draft; author code and data (files labelled \"Figure 3.17/4.17\" in the chapter folder)",
+ "caption": "Hourly precipitation (21 mm total) drawn as hanging bars.",
+ "notes": "The chapter-folder code/data files are labelled 3.17/4.17 but reproduce the hourly hyetograph (Fig. 3.16 in the draft)."
+}

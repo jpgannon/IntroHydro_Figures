@@ -1,0 +1,8 @@
+{
+ "slug": "vapor_pressure",
+ "ch": "ch03",
+ "title": "Figure 3.11: Temperature versus saturation vapor pressure",
+ "source": "Chapter 3 draft; author code (Figure 3.11 code file, truncated at Word's 2048-character limit) completed from the figure image",
+ "caption": "Saturation vapor pressure curve with dew-point and relative-humidity annotations.",
+ "notes": "Author code was cut off at 2048 characters in the Word file; the remainder was reconstructed to match the draft image. Saturation vapor pressure uses the Bolton (1980) formula."
+}

@@ -1,0 +1,15 @@
+# Figures 3.21 and 3.22: normal PDF and CDF of annual precipitation; effect of standard deviation
+# Chapter 3 draft; parameters read from the draft figure (mean 40 in; sigma 5 and 10 in for Fig 3.22; sigma 8 in assumed for the Fig 3.21 schematic)
+# Run: Rscript normal_distribution_pdf_cdf.R -> figure_r.png (base R, no packages)
+mu <- 40; sd <- 8; xq <- 46; x <- seq(10, 70, length.out = 600); m <- x <= xq
+png("figure_r.png", width = 2100, height = 630, res = 150); par(mfrow = c(1, 3), mar = c(4.2, 4.5, 2.4, 1), las = 1)
+plot(x, dnorm(x, mu, sd), type = "l", col = "#1f4e79", lwd = 2, bty = "l", xlab = "Annual precipitation (inches)", ylab = "Probability density")
+polygon(c(x[m], rev(x[m])), c(dnorm(x[m], mu, sd), rep(0, sum(m))), col = "#9ec5e8", border = NA); lines(x, dnorm(x, mu, sd), col = "#1f4e79", lwd = 2)
+legend("topright", bty = "n", fill = "#9ec5e8", border = NA, legend = sprintf("P(X <= %d in) = %.2f", xq, pnorm(xq, mu, sd))); mtext("(a) Probability density function", adj = 0, font = 2, cex = 0.8, line = 0.6)
+plot(x, pnorm(x, mu, sd), type = "l", col = "#1f4e79", lwd = 2, bty = "l", xlab = "Annual precipitation (inches)", ylab = "Cumulative probability")
+polygon(c(x[m], rev(x[m])), c(pnorm(x[m], mu, sd), rep(0, sum(m))), col = "#9ec5e8", border = NA); lines(x, pnorm(x, mu, sd), col = "#1f4e79", lwd = 2)
+segments(c(xq, 10), c(0, pnorm(xq, mu, sd)), c(xq, xq), rep(pnorm(xq, mu, sd), 2), lty = 3); mtext("(b) Cumulative distribution function", adj = 0, font = 2, cex = 0.8, line = 0.6)
+plot(x, dnorm(x, mu, 5), type = "l", col = "#4682b4", lwd = 2.2, bty = "l", xlab = "Annual precipitation (inches)", ylab = "Probability density")
+lines(x, dnorm(x, mu, 10), col = "#ff8c00", lwd = 2.2); legend("topright", bty = "n", lwd = 2.2, col = c("#4682b4", "#ff8c00"), legend = c("sigma = 5 in", "sigma = 10 in"))
+mtext("(c) Narrower vs wider standard deviation", adj = 0, font = 2, cex = 0.8, line = 0.6)
+invisible(dev.off())

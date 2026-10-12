@@ -1,0 +1,121 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Figure 3.9: Hyetographs for a frontal storm (March) and a convective storm (June)</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 3 · Precipitation</p><h1>Figure 3.9: Hyetographs for a frontal storm (March) and a convective storm (June)</h1><p>15-minute precipitation, frontal vs convective storm.</p><p class=mut>Source: Chapter 3 draft; data supplied by chapter author (Figure_3_9_Timeseries.xlsx; Hubbard Brook rain gage, 15-min)</p><p><b>Data:</b> <a href='hyetograph_convective_june.csv'>hyetograph_convective_june.csv</a>, <a href='hyetograph_frontal_march.csv'>hyetograph_frontal_march.csv</a></p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Figure 3.9: Hyetographs for a frontal storm (March) and a convective storm (June) (Python output)'><p class=mut>Code: <a href='hyetographs_frontal_convective.py'>hyetographs_frontal_convective.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Figure 3.9: Hyetographs for a frontal storm (March) and a convective storm (June)
+Chapter 3 draft; data supplied by chapter author (Figure_3_9_Timeseries.xlsx; Hubbard Brook rain gage, 15-min)
+Run: python3 hyetographs_frontal_convective.py  -&gt;  figure_python.png&quot;&quot;&quot;
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use(&quot;Agg&quot;)
+import matplotlib.pyplot as plt
+
+a = pd.read_csv(&quot;hyetograph_frontal_march.csv&quot;)
+a[&quot;datetime&quot;] = pd.to_datetime(a[&quot;datetime&quot;], format=&quot;%Y-%m-%d %H:%M:%S&quot;)
+
+b = pd.read_csv(&quot;hyetograph_convective_june.csv&quot;)
+b[&quot;datetime&quot;] = pd.to_datetime(b[&quot;datetime&quot;], format=&quot;%Y-%m-%d %H:%M:%S&quot;)
+
+fig, axes = plt.subplots(2, 1, figsize=(8, 6), squeeze=False)
+axes = axes[:, 0]
+ax = axes[0]
+ax.bar(a[&quot;datetime&quot;], a[&quot;precip_mm&quot;], width=0.010416666666666666, color=&quot;#1f4e79&quot;, edgecolor=&quot;none&quot;)
+import matplotlib.dates as mdates
+ax.xaxis.set_major_formatter(mdates.DateFormatter(&quot;%H:%M&quot;))
+ax.set_ylim(1.0, 0)
+ax.set_xlabel(&quot;Time of day&quot;)
+ax.set_ylabel(&quot;Precipitation (mm per 15 min)&quot;)
+ax.set_title(&quot;(a) Frontal storm, 31 March 2025&quot;, loc=&quot;left&quot;, fontsize=10)
+ax.grid(alpha=0.25)
+for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+ax.xaxis.set_ticks_position(&quot;top&quot;) if False else None
+
+ax = axes[1]
+ax.bar(b[&quot;datetime&quot;], b[&quot;precip_mm&quot;], width=0.010416666666666666, color=&quot;#1f4e79&quot;, edgecolor=&quot;none&quot;)
+import matplotlib.dates as mdates
+ax.xaxis.set_major_formatter(mdates.DateFormatter(&quot;%H:%M&quot;))
+ax.set_ylim(6, 0)
+ax.set_xlabel(&quot;Time of day&quot;)
+ax.set_ylabel(&quot;Precipitation (mm per 15 min)&quot;)
+ax.set_title(&quot;(b) Convective storm, 6 June 2025&quot;, loc=&quot;left&quot;, fontsize=10)
+ax.grid(alpha=0.25)
+for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+ax.xaxis.set_ticks_position(&quot;top&quot;) if False else None
+
+fig.tight_layout()
+fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Figure 3.9: Hyetographs for a frontal storm (March) and a convective storm (June) (R output)'><p class=mut>Code: <a href='hyetographs_frontal_convective.R'>hyetographs_frontal_convective.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Figure 3.9: Hyetographs for a frontal storm (March) and a convective storm (June)
+# Chapter 3 draft; data supplied by chapter author (Figure_3_9_Timeseries.xlsx; Hubbard Brook rain gage, 15-min)
+# Run: Rscript hyetographs_frontal_convective.R  -&gt;  figure_r.png (base R, no packages needed)
+
+a &lt;- read.csv(&quot;hyetograph_frontal_march.csv&quot;, stringsAsFactors = FALSE)
+a$datetime &lt;- as.POSIXct(a$datetime, format = &quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;UTC&quot;)
+
+b &lt;- read.csv(&quot;hyetograph_convective_june.csv&quot;, stringsAsFactors = FALSE)
+b$datetime &lt;- as.POSIXct(b$datetime, format = &quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;UTC&quot;)
+
+png(&quot;figure_r.png&quot;, width = 1200, height = 900, res = 150)
+par(mfrow = c(2, 1), mar = c(4.2, 4.6, 2.2, 1), las = 1)
+plot(NA, xlim = range(c(a$datetime), na.rm = TRUE), ylim = c(1.0, 0), log = &quot;&quot;, xlab = &quot;Time of day&quot;, ylab = &quot;Precipitation (mm per 15 min)&quot;, bty = &quot;l&quot;, xaxt = &quot;n&quot;, xaxs = &quot;i&quot;)
+grid(col = &quot;grey88&quot;)
+axis.POSIXct(1, x = a$datetime, format = &quot;%H:%M&quot;)
+rect(a$datetime - 900.0/2, 0, a$datetime + 900.0/2, a$precip_mm, col = &quot;#1f4e79&quot;, border = NA)
+mtext(&quot;(a) Frontal storm, 31 March 2025&quot;, side = 3, adj = 0, line = 0.5, cex = 0.8, font = 2)
+
+plot(NA, xlim = range(c(b$datetime), na.rm = TRUE), ylim = c(6, 0), log = &quot;&quot;, xlab = &quot;Time of day&quot;, ylab = &quot;Precipitation (mm per 15 min)&quot;, bty = &quot;l&quot;, xaxt = &quot;n&quot;, xaxs = &quot;i&quot;)
+grid(col = &quot;grey88&quot;)
+axis.POSIXct(1, x = b$datetime, format = &quot;%H:%M&quot;)
+rect(b$datetime - 900.0/2, 0, b$datetime + 900.0/2, b$precip_mm, col = &quot;#1f4e79&quot;, border = NA)
+mtext(&quot;(b) Convective storm, 6 June 2025&quot;, side = 3, adj = 0, line = 0.5, cex = 0.8, font = 2)
+
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Figure 3.9: Hyetographs for a frontal storm (March) and a convective storm (June) (MATLAB output)'><p class=mut>Code: <a href='hyetographs_frontal_convective.m'>hyetographs_frontal_convective.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Figure 3.9: Hyetographs for a frontal storm (March) and a convective storm (June)
+% Chapter 3 draft; data supplied by chapter author (Figure_3_9_Timeseries.xlsx; Hubbard Brook rain gage, 15-min)
+% Run: run hyetographs_frontal_convective.m  -&gt;  figure_matlab.png (works in MATLAB and GNU Octave)
+clear; close all;
+
+fid = fopen(&#x27;hyetograph_frontal_march.csv&#x27;); fgetl(fid);
+C = textscan(fid, &#x27;%s%f&#x27;, &#x27;Delimiter&#x27;, &#x27;,&#x27;, &#x27;EmptyValue&#x27;, NaN); fclose(fid);
+a.datetime = C{1};
+a.precip_mm = C{2};
+a.datetime = strrep(a.datetime, &#x27;&quot;&#x27;, &#x27;&#x27;);
+a.datetime = datenum(a.datetime, &#x27;yyyy-mm-dd HH:MM:SS&#x27;);
+a_t0 = floor(min(a.datetime));  a.datetime = a.datetime - a_t0;   % offset keeps plotting precision (Octave uses single precision)
+
+fid = fopen(&#x27;hyetograph_convective_june.csv&#x27;); fgetl(fid);
+C = textscan(fid, &#x27;%s%f&#x27;, &#x27;Delimiter&#x27;, &#x27;,&#x27;, &#x27;EmptyValue&#x27;, NaN); fclose(fid);
+b.datetime = C{1};
+b.precip_mm = C{2};
+b.datetime = strrep(b.datetime, &#x27;&quot;&#x27;, &#x27;&#x27;);
+b.datetime = datenum(b.datetime, &#x27;yyyy-mm-dd HH:MM:SS&#x27;);
+b_t0 = floor(min(b.datetime));  b.datetime = b.datetime - b_t0;   % offset keeps plotting precision (Octave uses single precision)
+
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 800 600], &#x27;Color&#x27;, &#x27;w&#x27;);
+subplot(2, 1, 1); hold on;
+xb = a.datetime(:); yb = a.precip_mm(:); h0 = patch(&#x27;XData&#x27;, [xb-0.010416666666666666/2 xb+0.010416666666666666/2 xb+0.010416666666666666/2 xb-0.010416666666666666/2]&#x27;, &#x27;YData&#x27;, [zeros(size(yb)) zeros(size(yb)) yb yb]&#x27;, &#x27;FaceColor&#x27;, [0.122, 0.306, 0.475], &#x27;EdgeColor&#x27;, &#x27;none&#x27;);
+ylim([0 1.0]);
+set(gca, &#x27;YDir&#x27;, &#x27;reverse&#x27;);
+xt = get(gca, &#x27;XTick&#x27;); set(gca, &#x27;XTick&#x27;, xt, &#x27;XTickLabel&#x27;, datestr(xt + a_t0, &#x27;HH:MM&#x27;));
+xlabel(&#x27;Time of day&#x27;);
+ylabel(&#x27;Precipitation (mm per 15 min)&#x27;);
+title(&#x27;(a) Frontal storm, 31 March 2025&#x27;, &#x27;FontSize&#x27;, 10, &#x27;HorizontalAlignment&#x27;, &#x27;left&#x27;);
+box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2, &#x27;Layer&#x27;, &#x27;top&#x27;);
+
+subplot(2, 1, 2); hold on;
+xb = b.datetime(:); yb = b.precip_mm(:); h0 = patch(&#x27;XData&#x27;, [xb-0.010416666666666666/2 xb+0.010416666666666666/2 xb+0.010416666666666666/2 xb-0.010416666666666666/2]&#x27;, &#x27;YData&#x27;, [zeros(size(yb)) zeros(size(yb)) yb yb]&#x27;, &#x27;FaceColor&#x27;, [0.122, 0.306, 0.475], &#x27;EdgeColor&#x27;, &#x27;none&#x27;);
+ylim([0 6]);
+set(gca, &#x27;YDir&#x27;, &#x27;reverse&#x27;);
+xt = get(gca, &#x27;XTick&#x27;); set(gca, &#x27;XTick&#x27;, xt, &#x27;XTickLabel&#x27;, datestr(xt + b_t0, &#x27;HH:MM&#x27;));
+xlabel(&#x27;Time of day&#x27;);
+ylabel(&#x27;Precipitation (mm per 15 min)&#x27;);
+title(&#x27;(b) Convective storm, 6 June 2025&#x27;, &#x27;FontSize&#x27;, 10, &#x27;HorizontalAlignment&#x27;, &#x27;left&#x27;);
+box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2, &#x27;Layer&#x27;, &#x27;top&#x27;);
+
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

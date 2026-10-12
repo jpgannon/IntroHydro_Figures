@@ -1,0 +1,59 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Budyko curve: evaporative index vs dryness index</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 1 · Water on Earth</p><h1>Budyko curve: evaporative index vs dryness index</h1><p>Budyko curve with energy- and water-limited regimes.</p><p class=mut>Source: Chapter 1/5 drafts; Budyko (1974) functional form</p><div class=note>Uses the Budyko (1974) form ET/P = sqrt(x tanh(1/x)(1 - exp(-x))).</div><p class=mut>No external data file: values are small and embedded in the code.</p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Budyko curve: evaporative index vs dryness index (Python output)'><p class=mut>Code: <a href='budyko_curve.py'>budyko_curve.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Chapters 1 and 5 - The Budyko curve (conceptual).
+Evaporative index (ET/P) as a function of aridity index (PET/P), using Budyko&#x27;s (1974) equation
+plus the energy limit (ET = PET) and the water limit (ET = P). The authors asked for their own version of this
+figure; the scatter of real catchments needs a catchment dataset and is not included.&quot;&quot;&quot;
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0.01, 5, 500)                       # aridity index PET/P
+budyko = np.sqrt(x * np.tanh(1 / x) * (1 - np.exp(-x)))
+energy_limit = np.minimum(x, 1)                      # ET/P cannot exceed PET/P ...
+water_limit = np.ones_like(x)                        # ... or 1 (all precipitation)
+
+fig, ax = plt.subplots(figsize=(7, 5))
+ax.plot(x, np.minimum(x, 1), &quot;k-&quot;, lw=1.5, label=&quot;Energy limit (ET = PET) and water limit (ET = P)&quot;)
+ax.plot(x, budyko, color=&quot;#1b4f72&quot;, lw=3, label=&quot;Budyko curve&quot;)
+ax.axvline(1, color=&quot;grey&quot;, ls=&quot;:&quot;, lw=1)
+ax.text(0.5, 0.12, &quot;energy-limited\n(humid)&quot;, ha=&quot;center&quot;, fontsize=11)
+ax.text(3, 0.62, &quot;water-limited\n(arid)&quot;, ha=&quot;center&quot;, fontsize=11)
+ax.set_xlim(0, 5); ax.set_ylim(0, 1.1)
+ax.set_xlabel(&quot;Aridity index, PET / P&quot;); ax.set_ylabel(&quot;Evaporative index, ET / P&quot;)
+ax.legend(loc=&quot;lower right&quot;, frameon=False)
+ax.spines[[&quot;top&quot;, &quot;right&quot;]].set_visible(False)
+fig.tight_layout(); fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Budyko curve: evaporative index vs dryness index (R output)'><p class=mut>Code: <a href='budyko_curve.R'>budyko_curve.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Chapters 1 and 5 - The Budyko curve (conceptual): ET/P vs PET/P (Budyko 1974) with energy and water limits
+x &lt;- seq(0.01, 5, length.out = 500)
+budyko &lt;- sqrt(x * tanh(1 / x) * (1 - exp(-x)))
+png(&quot;figure_r.png&quot;, width = 1050, height = 750, res = 150)
+par(mar = c(4.5, 4.5, 1, 1), bty = &quot;l&quot;)
+plot(x, pmin(x, 1), type = &quot;l&quot;, lwd = 2, xlim = c(0, 5), ylim = c(0, 1.1),
+     xlab = &quot;Aridity index, PET / P&quot;, ylab = &quot;Evaporative index, ET / P&quot;)
+lines(x, budyko, col = &quot;#1b4f72&quot;, lwd = 4)
+abline(v = 1, lty = 3, col = &quot;grey50&quot;)
+text(0.5, 0.12, &quot;energy-limited\n(humid)&quot;); text(3, 0.62, &quot;water-limited\n(arid)&quot;)
+legend(&quot;bottomright&quot;, bty = &quot;n&quot;, lwd = c(2, 4), col = c(&quot;black&quot;, &quot;#1b4f72&quot;),
+       legend = c(&quot;Energy limit (ET = PET) and water limit (ET = P)&quot;, &quot;Budyko curve&quot;))
+dev.off()
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Budyko curve: evaporative index vs dryness index (MATLAB output)'><p class=mut>Code: <a href='budyko_curve.m'>budyko_curve.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Chapters 1 and 5 - The Budyko curve (conceptual): ET/P vs PET/P (Budyko 1974) with energy and water limits
+x = linspace(0.01, 5, 500);
+budyko = sqrt(x .* tanh(1 ./ x) .* (1 - exp(-x)));
+fig = figure(&#x27;Position&#x27;,[100 100 700 500]); hold on
+h1 = plot(x, min(x, 1), &#x27;k-&#x27;, &#x27;LineWidth&#x27;, 1.5);
+h2 = plot(x, budyko, &#x27;Color&#x27;, [0.106 0.31 0.447], &#x27;LineWidth&#x27;, 3);
+plot([1 1], [0 1.1], &#x27;:&#x27;, &#x27;Color&#x27;, [0.5 0.5 0.5]);
+text(0.5, 0.12, {&#x27;energy-limited&#x27;,&#x27;(humid)&#x27;}, &#x27;HorizontalAlignment&#x27;,&#x27;center&#x27;);
+text(3, 0.62, {&#x27;water-limited&#x27;,&#x27;(arid)&#x27;}, &#x27;HorizontalAlignment&#x27;,&#x27;center&#x27;);
+xlim([0 5]); ylim([0 1.1]); box off
+xlabel(&#x27;Aridity index, PET / P&#x27;); ylabel(&#x27;Evaporative index, ET / P&#x27;);
+legend([h1 h2], {&#x27;Energy limit (ET = PET) and water limit (ET = P)&#x27;,&#x27;Budyko curve&#x27;}, &#x27;Location&#x27;,&#x27;southeast&#x27;, &#x27;Box&#x27;,&#x27;off&#x27;);
+print(fig, &#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

@@ -1,0 +1,95 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Figure 1.x: Where Earth&#x27;s water is stored (storage pools)</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 1 · Water on Earth</p><h1>Figure 1.x: Where Earth&#x27;s water is stored (storage pools)</h1><p>Global water storage by pool on a log scale.</p><p class=mut>Source: Chapter 1 draft, Table 1.1 values (volumes in the draft table)</p><div class=note>Table 1.1 in the draft contains a typo (&quot;85,4000&quot;); the value used here is stated in the script.</div><p class=mut>No external data file: values are small and embedded in the code.</p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Figure 1.x: Where Earth&#x27;s water is stored (storage pools) (Python output)'><p class=mut>Code: <a href='storage_pools.py'>storage_pools.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Chapter 1 - Volumes of Earth&#x27;s water storage pools (Table 1.1 as a log-scale bar chart).
+Data: Table 1.1 of the Chapter 1 draft (volume and range of reported values, km^3).&quot;&quot;&quot;
+import numpy as np
+import matplotlib.pyplot as plt
+
+pools = [  # name, volume, low, high (km^3)
+    (&quot;Ocean, deep&quot;, 1_206_000_000, 1_100_000_000, 1_300_000_000),
+    (&quot;Ocean, mixed layer&quot;, 134_000_000, 90_000_000, 170_000_000),
+    (&quot;Ice sheets &amp; glaciers&quot;, 25_800_000, 24_064_000, 29_200_000),
+    (&quot;Groundwater&quot;, 22_600_000, 8_060_000, 23_400_000),
+    (&quot;Permafrost&quot;, 207_000, 22_000, 300_000),
+    (&quot;Lakes (fresh)&quot;, 108_000, 91_000, 125_000),
+    (&quot;Lakes (saline)&quot;, 94_700, 85_400, 104_000),   # draft table reads &quot;85,4000&quot;; assumed 85,400
+    (&quot;Soil moisture&quot;, 54_100, 16_500, 122_000),
+    (&quot;Wetlands&quot;, 14_100, 11_000, 17_000),
+    (&quot;Reservoirs&quot;, 10_800, 7_000, 15_000),
+    (&quot;Atmosphere (over ocean)&quot;, 10_000, 8_000, 12_000),
+    (&quot;Atmosphere (over land)&quot;, 3_000, 2_700, 3_300),
+    (&quot;Snowpack&quot;, 2_900, 2_600, 3_500),
+    (&quot;Rivers&quot;, 1_900, 1_250, 2_120),
+    (&quot;Biosphere&quot;, 1_120, None, None),
+]
+names = [p[0] for p in pools]
+vol = np.array([p[1] for p in pools], float)
+lo = np.array([p[2] if p[2] else np.nan for p in pools], float)
+hi = np.array([p[3] if p[3] else np.nan for p in pools], float)
+y = np.arange(len(pools))[::-1]
+
+fig, ax = plt.subplots(figsize=(8, 6))
+ax.barh(y, vol, color=&quot;#2b6cb0&quot;, height=0.7)
+ax.errorbar(vol, y, xerr=[vol - lo, hi - vol], fmt=&quot;none&quot;, ecolor=&quot;k&quot;, capsize=3, lw=1)
+ax.set_xscale(&quot;log&quot;)
+ax.set_xlim(500, 5e9)
+ax.set_yticks(y)
+ax.set_yticklabels(names)
+ax.set_xlabel(&quot;Volume (km$^3$), log scale&quot;)
+ax.set_title(&quot;Estimated sizes of global water storage pools&quot;)
+ax.grid(axis=&quot;x&quot;, alpha=0.3)
+ax.spines[[&quot;top&quot;, &quot;right&quot;]].set_visible(False)
+fig.tight_layout()
+fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Figure 1.x: Where Earth&#x27;s water is stored (storage pools) (R output)'><p class=mut>Code: <a href='storage_pools.R'>storage_pools.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Chapter 1 - Volumes of Earth&#x27;s water storage pools (Table 1.1 as a log-scale bar chart)
+# Data: Table 1.1 of the Chapter 1 draft (volume and range of reported values, km^3)
+pools &lt;- data.frame(
+  name = c(&quot;Ocean, deep&quot;,&quot;Ocean, mixed layer&quot;,&quot;Ice sheets &amp; glaciers&quot;,&quot;Groundwater&quot;,&quot;Permafrost&quot;,
+           &quot;Lakes (fresh)&quot;,&quot;Lakes (saline)&quot;,&quot;Soil moisture&quot;,&quot;Wetlands&quot;,&quot;Reservoirs&quot;,
+           &quot;Atmosphere (over ocean)&quot;,&quot;Atmosphere (over land)&quot;,&quot;Snowpack&quot;,&quot;Rivers&quot;,&quot;Biosphere&quot;),
+  vol  = c(1206e6,134e6,25.8e6,22.6e6,207e3,108e3,94.7e3,54.1e3,14.1e3,10.8e3,10e3,3e3,2.9e3,1.9e3,1.12e3),
+  lo   = c(1100e6,90e6,24.064e6,8.06e6,22e3,91e3,85.4e3,16.5e3,11e3,7e3,8e3,2.7e3,2.6e3,1.25e3,NA),
+  hi   = c(1300e6,170e6,29.2e6,23.4e6,300e3,125e3,104e3,122e3,17e3,15e3,12e3,3.3e3,3.5e3,2.12e3,NA)
+)  # saline-lake low value: draft table reads &quot;85,4000&quot;; assumed 85,400
+n &lt;- nrow(pools)
+png(&quot;figure_r.png&quot;, width = 1200, height = 900, res = 150)
+par(mar = c(4.5, 11, 3, 1))
+y &lt;- barplot(rev(pools$vol), horiz = TRUE, log = &quot;x&quot;, col = &quot;#2b6cb0&quot;, border = NA,
+             xlim = c(500, 5e9), names.arg = rev(pools$name), las = 1, xaxt = &quot;n&quot;,
+             xlab = &quot;Volume (km^3), log scale&quot;, main = &quot;Estimated sizes of global water storage pools&quot;)
+axis(1, at = 10^(3:9), labels = c(&quot;1e3&quot;,&quot;1e4&quot;,&quot;1e5&quot;,&quot;1e6&quot;,&quot;1e7&quot;,&quot;1e8&quot;,&quot;1e9&quot;))
+ok &lt;- !is.na(pools$lo)
+arrows(rev(pools$lo)[rev(ok)], y[rev(ok)], rev(pools$hi)[rev(ok)], y[rev(ok)],
+       angle = 90, code = 3, length = 0.03)
+dev.off()
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Figure 1.x: Where Earth&#x27;s water is stored (storage pools) (MATLAB output)'><p class=mut>Code: <a href='storage_pools.m'>storage_pools.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Chapter 1 - Volumes of Earth&#x27;s water storage pools (Table 1.1 as a log-scale bar chart)
+% Data: Table 1.1 of the Chapter 1 draft (volume and range of reported values, km^3)
+names = {&#x27;Ocean, deep&#x27;,&#x27;Ocean, mixed layer&#x27;,&#x27;Ice sheets &amp; glaciers&#x27;,&#x27;Groundwater&#x27;,&#x27;Permafrost&#x27;, ...
+         &#x27;Lakes (fresh)&#x27;,&#x27;Lakes (saline)&#x27;,&#x27;Soil moisture&#x27;,&#x27;Wetlands&#x27;,&#x27;Reservoirs&#x27;, ...
+         &#x27;Atmosphere (over ocean)&#x27;,&#x27;Atmosphere (over land)&#x27;,&#x27;Snowpack&#x27;,&#x27;Rivers&#x27;,&#x27;Biosphere&#x27;};
+vol = [1206e6 134e6 25.8e6 22.6e6 207e3 108e3 94.7e3 54.1e3 14.1e3 10.8e3 10e3 3e3 2.9e3 1.9e3 1.12e3];
+lo  = [1100e6 90e6 24.064e6 8.06e6 22e3 91e3 85.4e3 16.5e3 11e3 7e3 8e3 2.7e3 2.6e3 1.25e3 NaN];
+hi  = [1300e6 170e6 29.2e6 23.4e6 300e3 125e3 104e3 122e3 17e3 15e3 12e3 3.3e3 3.5e3 2.12e3 NaN];
+% (saline-lake low value: draft table reads &quot;85,4000&quot;; assumed 85,400)
+n = numel(vol); y = n:-1:1;
+fig = figure(&#x27;Position&#x27;,[100 100 900 650]);
+ax = axes(fig); hold(ax,&#x27;on&#x27;); set(ax,&#x27;XScale&#x27;,&#x27;log&#x27;);
+for k = 1:n
+    patch(ax, [500 vol(k) vol(k) 500], [y(k)-0.35 y(k)-0.35 y(k)+0.35 y(k)+0.35], [0.17 0.42 0.69], &#x27;EdgeColor&#x27;,&#x27;none&#x27;);
+end
+ok = ~isnan(lo);
+for k = find(ok)
+    plot(ax, [lo(k) hi(k)], [y(k) y(k)], &#x27;k-&#x27;, &#x27;LineWidth&#x27;,1);
+end
+set(ax,&#x27;YTick&#x27;,sort(y),&#x27;YTickLabel&#x27;,fliplr(names),&#x27;XLim&#x27;,[500 5e9],&#x27;YLim&#x27;,[0.4 n+0.6]);
+xlabel(ax,&#x27;Volume (km^3), log scale&#x27;); title(ax,&#x27;Estimated sizes of global water storage pools&#x27;);
+grid(ax,&#x27;on&#x27;); box(ax,&#x27;off&#x27;);
+print(fig,&#x27;-dpng&#x27;,&#x27;-r150&#x27;,&#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

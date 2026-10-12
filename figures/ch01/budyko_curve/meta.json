@@ -1,0 +1,8 @@
+{
+ "slug": "budyko_curve",
+ "ch": "ch01",
+ "title": "Budyko curve: evaporative index vs dryness index",
+ "source": "Chapter 1/5 drafts; Budyko (1974) functional form",
+ "caption": "Budyko curve with energy- and water-limited regimes.",
+ "notes": "Uses the Budyko (1974) form ET/P = sqrt(x tanh(1/x)(1 - exp(-x)))."
+}

@@ -1,0 +1,70 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Figures 3.21 and 3.22: normal PDF and CDF of annual precipitation; effect of standard deviation</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 3 · Precipitation</p><h1>Figures 3.21 and 3.22: normal PDF and CDF of annual precipitation; effect of standard deviation</h1><p>PDF and CDF of a normal distribution with shaded P(X &lt;= x); PDFs with narrower and wider SD.</p><p class=mut>Source: Chapter 3 draft; parameters read from the draft figure (mean 40 in; sigma 5 and 10 in for Fig 3.22; sigma 8 in assumed for the Fig 3.21 schematic)</p><p class=mut>No external data file: values are small and embedded in the code.</p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Figures 3.21 and 3.22: normal PDF and CDF of annual precipitation; effect of standard deviation (Python output)'><p class=mut>Code: <a href='normal_distribution_pdf_cdf.py'>normal_distribution_pdf_cdf.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Figures 3.21 and 3.22: normal PDF and CDF of annual precipitation; effect of standard deviation
+Chapter 3 draft; parameters read from the draft figure (mean 40 in; sigma 5 and 10 in for Fig 3.22; sigma 8 in assumed for the Fig 3.21 schematic)
+Run: python3 normal_distribution_pdf_cdf.py -&gt; figure_python.png&quot;&quot;&quot;
+import numpy as np, matplotlib
+from math import erf
+matplotlib.use(&quot;Agg&quot;); import matplotlib.pyplot as plt
+pdf = lambda x, mu, sd: np.exp(-0.5 * ((x - mu) / sd) ** 2) / (sd * np.sqrt(2 * np.pi))
+cdf = lambda x, mu, sd: 0.5 * (1 + np.vectorize(erf)((x - mu) / (sd * np.sqrt(2))))
+mu, sd, xq = 40, 8, 46                      # mean and SD (in); xq = example observation value
+x = np.linspace(10, 70, 600)
+fig, axs = plt.subplots(1, 3, figsize=(14, 4.2))
+ax = axs[0]; ax.plot(x, pdf(x, mu, sd), color=&quot;#1f4e79&quot;, lw=2); m = x &lt;= xq
+ax.fill_between(x[m], 0, pdf(x[m], mu, sd), color=&quot;#9ec5e8&quot;, label=f&quot;P(X ≤ {xq} in) = {cdf(xq, mu, sd):.2f}&quot;)
+ax.set_title(&quot;(a) Probability density function&quot;, loc=&quot;left&quot;, fontsize=10); ax.set_ylabel(&quot;Probability density&quot;); ax.legend(frameon=False)
+ax = axs[1]; ax.plot(x, cdf(x, mu, sd), color=&quot;#1f4e79&quot;, lw=2); ax.fill_between(x[m], 0, cdf(x[m], mu, sd), color=&quot;#9ec5e8&quot;)
+ax.plot([xq, xq], [0, cdf(xq, mu, sd)], &quot;k:&quot;, lw=1); ax.plot([10, xq], [cdf(xq, mu, sd)] * 2, &quot;k:&quot;, lw=1)
+ax.set_title(&quot;(b) Cumulative distribution function&quot;, loc=&quot;left&quot;, fontsize=10); ax.set_ylabel(&quot;Cumulative probability&quot;)
+ax = axs[2]
+for s, c in ((5, &quot;#4682b4&quot;), (10, &quot;#ff8c00&quot;)): ax.plot(x, pdf(x, mu, s), color=c, lw=2.2, label=f&quot;σ = {s} in&quot;)
+ax.set_title(&quot;(c) Narrower vs wider standard deviation&quot;, loc=&quot;left&quot;, fontsize=10); ax.set_ylabel(&quot;Probability density&quot;); ax.legend(frameon=False)
+for ax in axs:
+    ax.set_xlabel(&quot;Annual precipitation (inches)&quot;); ax.grid(alpha=0.25)
+    for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+fig.tight_layout(); fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Figures 3.21 and 3.22: normal PDF and CDF of annual precipitation; effect of standard deviation (R output)'><p class=mut>Code: <a href='normal_distribution_pdf_cdf.R'>normal_distribution_pdf_cdf.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Figures 3.21 and 3.22: normal PDF and CDF of annual precipitation; effect of standard deviation
+# Chapter 3 draft; parameters read from the draft figure (mean 40 in; sigma 5 and 10 in for Fig 3.22; sigma 8 in assumed for the Fig 3.21 schematic)
+# Run: Rscript normal_distribution_pdf_cdf.R -&gt; figure_r.png (base R, no packages)
+mu &lt;- 40; sd &lt;- 8; xq &lt;- 46; x &lt;- seq(10, 70, length.out = 600); m &lt;- x &lt;= xq
+png(&quot;figure_r.png&quot;, width = 2100, height = 630, res = 150); par(mfrow = c(1, 3), mar = c(4.2, 4.5, 2.4, 1), las = 1)
+plot(x, dnorm(x, mu, sd), type = &quot;l&quot;, col = &quot;#1f4e79&quot;, lwd = 2, bty = &quot;l&quot;, xlab = &quot;Annual precipitation (inches)&quot;, ylab = &quot;Probability density&quot;)
+polygon(c(x[m], rev(x[m])), c(dnorm(x[m], mu, sd), rep(0, sum(m))), col = &quot;#9ec5e8&quot;, border = NA); lines(x, dnorm(x, mu, sd), col = &quot;#1f4e79&quot;, lwd = 2)
+legend(&quot;topright&quot;, bty = &quot;n&quot;, fill = &quot;#9ec5e8&quot;, border = NA, legend = sprintf(&quot;P(X &lt;= %d in) = %.2f&quot;, xq, pnorm(xq, mu, sd))); mtext(&quot;(a) Probability density function&quot;, adj = 0, font = 2, cex = 0.8, line = 0.6)
+plot(x, pnorm(x, mu, sd), type = &quot;l&quot;, col = &quot;#1f4e79&quot;, lwd = 2, bty = &quot;l&quot;, xlab = &quot;Annual precipitation (inches)&quot;, ylab = &quot;Cumulative probability&quot;)
+polygon(c(x[m], rev(x[m])), c(pnorm(x[m], mu, sd), rep(0, sum(m))), col = &quot;#9ec5e8&quot;, border = NA); lines(x, pnorm(x, mu, sd), col = &quot;#1f4e79&quot;, lwd = 2)
+segments(c(xq, 10), c(0, pnorm(xq, mu, sd)), c(xq, xq), rep(pnorm(xq, mu, sd), 2), lty = 3); mtext(&quot;(b) Cumulative distribution function&quot;, adj = 0, font = 2, cex = 0.8, line = 0.6)
+plot(x, dnorm(x, mu, 5), type = &quot;l&quot;, col = &quot;#4682b4&quot;, lwd = 2.2, bty = &quot;l&quot;, xlab = &quot;Annual precipitation (inches)&quot;, ylab = &quot;Probability density&quot;)
+lines(x, dnorm(x, mu, 10), col = &quot;#ff8c00&quot;, lwd = 2.2); legend(&quot;topright&quot;, bty = &quot;n&quot;, lwd = 2.2, col = c(&quot;#4682b4&quot;, &quot;#ff8c00&quot;), legend = c(&quot;sigma = 5 in&quot;, &quot;sigma = 10 in&quot;))
+mtext(&quot;(c) Narrower vs wider standard deviation&quot;, adj = 0, font = 2, cex = 0.8, line = 0.6)
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Figures 3.21 and 3.22: normal PDF and CDF of annual precipitation; effect of standard deviation (MATLAB output)'><p class=mut>Code: <a href='normal_distribution_pdf_cdf.m'>normal_distribution_pdf_cdf.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Figures 3.21 and 3.22: normal PDF and CDF of annual precipitation; effect of standard deviation
+% Chapter 3 draft; parameters read from the draft figure (mean 40 in; sigma 5 and 10 in for Fig 3.22; sigma 8 in assumed for the Fig 3.21 schematic)
+% Run: run normal_distribution_pdf_cdf.m -&gt; figure_matlab.png (MATLAB or GNU Octave)
+clear; close all;
+mu = 40; sd = 8; xq = 46; x = linspace(10, 70, 600); m = x &lt;= xq;
+pdf_ = @(x, mu, s) exp(-0.5 * ((x - mu) / s).^2) / (s * sqrt(2 * pi));
+cdf_ = @(x, mu, s) 0.5 * (1 + erf((x - mu) / (s * sqrt(2))));
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 1400 420], &#x27;Color&#x27;, &#x27;w&#x27;);
+subplot(1, 3, 1); hold on;
+patch(&#x27;XData&#x27;, [x(m) fliplr(x(m))]&#x27;, &#x27;YData&#x27;, [pdf_(x(m), mu, sd) zeros(1, sum(m))]&#x27;, &#x27;FaceColor&#x27;, [0.62 0.77 0.91], &#x27;EdgeColor&#x27;, &#x27;none&#x27;);
+plot(x, pdf_(x, mu, sd), &#x27;-&#x27;, &#x27;Color&#x27;, [0.122 0.306 0.475], &#x27;LineWidth&#x27;, 2); ylabel(&#x27;Probability density&#x27;); title(&#x27;(a) Probability density function&#x27;, &#x27;FontSize&#x27;, 10);
+text(52, 0.04, sprintf(&#x27;P(X &lt;= %d in) = %.2f&#x27;, xq, cdf_(xq, mu, sd)));
+subplot(1, 3, 2); hold on;
+patch(&#x27;XData&#x27;, [x(m) fliplr(x(m))]&#x27;, &#x27;YData&#x27;, [cdf_(x(m), mu, sd) zeros(1, sum(m))]&#x27;, &#x27;FaceColor&#x27;, [0.62 0.77 0.91], &#x27;EdgeColor&#x27;, &#x27;none&#x27;);
+plot(x, cdf_(x, mu, sd), &#x27;-&#x27;, &#x27;Color&#x27;, [0.122 0.306 0.475], &#x27;LineWidth&#x27;, 2);
+plot([xq xq], [0 cdf_(xq, mu, sd)], &#x27;k:&#x27;); plot([10 xq], [1 1] * cdf_(xq, mu, sd), &#x27;k:&#x27;); ylabel(&#x27;Cumulative probability&#x27;); title(&#x27;(b) Cumulative distribution function&#x27;, &#x27;FontSize&#x27;, 10);
+subplot(1, 3, 3); hold on;
+h1 = plot(x, pdf_(x, mu, 5), &#x27;-&#x27;, &#x27;Color&#x27;, [0.275 0.51 0.706], &#x27;LineWidth&#x27;, 2.2); h2 = plot(x, pdf_(x, mu, 10), &#x27;-&#x27;, &#x27;Color&#x27;, [1 0.549 0], &#x27;LineWidth&#x27;, 2.2);
+legend([h1 h2], {&#x27;\sigma = 5 in&#x27;, &#x27;\sigma = 10 in&#x27;}); legend boxoff; ylabel(&#x27;Probability density&#x27;); title(&#x27;(c) Narrower vs wider standard deviation&#x27;, &#x27;FontSize&#x27;, 10);
+for k = 1:3, subplot(1, 3, k); xlabel(&#x27;Annual precipitation (inches)&#x27;); box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2); xlim([10 70]); end
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

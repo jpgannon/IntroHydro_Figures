@@ -1,0 +1,57 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Figure 3.16: Hourly hyetograph for a 24-hour period</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 3 · Precipitation</p><h1>Figure 3.16: Hourly hyetograph for a 24-hour period</h1><p>Hourly precipitation (21 mm total) drawn as hanging bars.</p><p class=mut>Source: Chapter 3 draft; author code and data (files labelled &quot;Figure 3.17/4.17&quot; in the chapter folder)</p><div class=note>The chapter-folder code/data files are labelled 3.17/4.17 but reproduce the hourly hyetograph (Fig. 3.16 in the draft).</div><p class=mut>No external data file: values are small and embedded in the code.</p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Figure 3.16: Hourly hyetograph for a 24-hour period (Python output)'><p class=mut>Code: <a href='hyetograph_hourly.py'>hyetograph_hourly.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Chapter 3, Figure 3.16 - Hourly hyetograph for a 24-hour period (21 mm total).
+Code from &#x27;Code for Figure 4.17.docx&#x27; (the file name uses an older figure number; this is the hourly hyetograph in
+Figure 3.16). Data match &#x27;Data_Figure_3_17.xlsx&#x27; (hour-ending precipitation, mm/hr), so they are included here.&quot;&quot;&quot;
+import matplotlib.pyplot as plt
+
+hrs = list(range(1, 25))
+p = {3: 0.5, 4: 1.5, 5: 8, 6: 4, 7: 2, 8: 0.5, 14: 0.5, 15: 1.5, 16: 0.5, 20: 1.0, 21: 1.0}
+v = [p.get(h, 0) for h in hrs]
+assert abs(sum(v) - 21) &lt; 1e-9          # total = 21 mm
+
+fig, ax = plt.subplots(figsize=(8, 4), dpi=200)
+ax.bar(hrs, v, width=0.9, color=&quot;#2b6cb0&quot;, edgecolor=&quot;#1a365d&quot;)
+ax.set_ylim(10, 0)                       # inverted axis: bars hang from the top
+ax.set_xlim(0.3, 24.7)
+ax.set_xticks(range(0, 25, 3))
+ax.set_xlabel(&quot;Hour ending (h, May 25, 2026)&quot;)
+ax.set_ylabel(&quot;Precipitation (mm/hr)&quot;)
+ax.spines[[&#x27;right&#x27;, &#x27;bottom&#x27;]].set_visible(False)
+ax.xaxis.set_label_position(&quot;top&quot;)
+ax.xaxis.tick_top()
+plt.tight_layout()
+plt.savefig(&quot;figure_python.png&quot;)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Figure 3.16: Hourly hyetograph for a 24-hour period (R output)'><p class=mut>Code: <a href='hyetograph_hourly.R'>hyetograph_hourly.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Chapter 3, Figure 3.16 - Hourly hyetograph for a 24-hour period (21 mm total)
+hrs &lt;- 1:24
+v &lt;- numeric(24); v[c(3,4,5,6,7,8,14,15,16,20,21)] &lt;- c(0.5,1.5,8,4,2,0.5,0.5,1.5,0.5,1,1)
+stopifnot(abs(sum(v) - 21) &lt; 1e-9)
+png(&quot;figure_r.png&quot;, width = 1200, height = 600, res = 150)
+par(mar = c(1, 4.5, 4.5, 1))
+plot(NA, xlim = c(0, 24.5), ylim = c(10, 0), xaxs = &quot;i&quot;, yaxs = &quot;i&quot;, xaxt = &quot;n&quot;, bty = &quot;n&quot;,
+     xlab = &quot;&quot;, ylab = &quot;Precipitation (mm/hr)&quot;)
+rect(hrs - 0.45, 0, hrs + 0.45, v, col = &quot;#2b6cb0&quot;, border = &quot;#1a365d&quot;)
+axis(3, at = 3 * (0:8), labels = 3 * (0:8))
+mtext(&quot;Hour ending (h, May 25, 2026)&quot;, side = 3, line = 2.5)
+dev.off()
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Figure 3.16: Hourly hyetograph for a 24-hour period (MATLAB output)'><p class=mut>Code: <a href='hyetograph_hourly.m'>hyetograph_hourly.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Chapter 3, Figure 3.16 - Hourly hyetograph for a 24-hour period (21 mm total)
+hrs = 1:24;
+v = zeros(1, 24); v([3 4 5 6 7 8 14 15 16 20 21]) = [0.5 1.5 8 4 2 0.5 0.5 1.5 0.5 1 1];
+assert(abs(sum(v) - 21) &lt; 1e-9)
+fig = figure(&#x27;Position&#x27;, [100 100 800 400]);
+ax = axes(fig); hold(ax, &#x27;on&#x27;);
+for k = 1:24
+    patch(ax, k + [-0.45 0.45 0.45 -0.45], [0 0 v(k) v(k)], [0.169 0.424 0.69], &#x27;EdgeColor&#x27;, [0.1 0.21 0.39]);
+end
+set(ax, &#x27;YDir&#x27;, &#x27;reverse&#x27;, &#x27;XAxisLocation&#x27;, &#x27;top&#x27;, &#x27;XTick&#x27;, 0:3:24, &#x27;Box&#x27;, &#x27;off&#x27;);
+xlim(ax, [0.3 24.7]); ylim(ax, [0 10]);
+xlabel(ax, &#x27;Hour ending (h, May 25, 2026)&#x27;); ylabel(ax, &#x27;Precipitation (mm/hr)&#x27;);
+print(fig, &#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

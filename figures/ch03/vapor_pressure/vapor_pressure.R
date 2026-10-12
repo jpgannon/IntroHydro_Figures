@@ -1,0 +1,41 @@
+# Chapter 3, Figure 3.11 - Temperature versus saturation vapor pressure (dew point and RH)
+es <- function(T) 6.112 * exp(17.67 * T / (T + 243.5))      # hPa, Bolton (1980), T in deg C
+dewpoint <- function(e) { x <- log(e / 6.112); 243.5 * x / (17.67 - x) }
+T0 <- 25; e0 <- 20
+Td <- dewpoint(e0); RH <- 100 * e0 / es(T0)
+T <- seq(-20, 40, length.out = 600)
+
+png("figure_r.png", width = 1650, height = 1200, res = 150)
+par(mar = c(6, 5, 4, 1))
+plot(NA, xlim = c(-20, 40), ylim = c(0, 80), xlab = "", ylab = "Water-vapor pressure (hPa)",
+     main = "Figure 3.11: Temperature versus saturation vapor pressure.", cex.lab = 1.3, xaxs = "i", yaxs = "i")
+polygon(c(T, rev(T)), c(es(T), rep(80, length(T))), col = "#fbe3e3", border = NA)
+polygon(c(T, rev(T)), c(es(T), rep(0, length(T))), col = "#deebf7", border = NA)
+lines(T, es(T), lwd = 4)
+box()
+mtext("Temperature (°C)", side = 1, line = 4, cex = 1.3)
+text(33, 68, expression(e[s](T)), cex = 1.6)
+# parcel cooling at constant vapor pressure
+arrows(T0 - 0.6, e0, Td + 0.6, e0, lwd = 4, length = 0.15)
+points(c(T0, Td), c(e0, e0), pch = 19, cex = 1.8)
+lines(c(-20, Td), c(e0, e0), lty = 3)
+segments(c(Td, T0), 0, c(Td, T0), e0, lty = 2)
+text(T0, e0 + 2.5, sprintf("RH ≈ %.0f%%", RH), cex = 1.1)
+text((T0 + Td) / 2, e0 - 3, "air parcel cools at\nnearly constant\nvapor pressure", font = 3, adj = c(0.5, 1))
+arrows(-3, 28, Td - 0.4, e0 + 0.6, length = 0.1)
+text(-8, 28, "saturation reached:\nRH = 100%,\ndew point")
+Tc <- seq(Td, -14, length.out = 100)
+lines(Tc, es(Tc), col = "#cc0000", lwd = 5)
+arrows(-13, es(-13), -15, es(-15), col = "#cc0000", lwd = 4, length = 0.12)
+text(-19.5, 6.5, "condensation begins;\nvapor pressure limited\nto e_s(T) as parcel\ncools further", col = "#cc0000", font = 3, adj = c(0, 0))
+text(-7.5, 58, "supersaturated conditions", col = "#cc0000", cex = 1.2)
+text(-7.5, 53, expression(paste("(", e > e[s], "; beyond scope)")), col = "#cc0000", cex = 1.2)
+text(34, 34, "unsaturated", col = "#1f5fbf", cex = 1.2)
+text(34, 30, "air parcels", col = "#1f5fbf", cex = 1.2)
+text(34, 26, expression(paste("(", e < e[s], ")")), col = "#1f5fbf", cex = 1.2)
+arrows(19, 33, 6, 33, col = "#2740c0", lwd = 2, length = 0.12)
+text(12.5, 36, "RH increases\nas T decreases", col = "#2740c0", font = 3)
+text(Td, -9, sprintf("Td = %.1f°C", Td), xpd = NA); text(T0, -9, "25°C", xpd = NA)
+mtext(expression(paste("RH = ", e / e[s](T), " × 100%   (actual vapor pressure e / saturation vapor pressure ", e[s], ")")),
+      side = 1, line = 5.3, cex = 0.95)
+dev.off()

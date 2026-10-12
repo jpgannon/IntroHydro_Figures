@@ -1,0 +1,7 @@
+{
+ "slug": "normal_distribution_pdf_cdf",
+ "ch": "ch03",
+ "title": "Figures 3.21 and 3.22: normal PDF and CDF of annual precipitation; effect of standard deviation",
+ "source": "Chapter 3 draft; parameters read from the draft figure (mean 40 in; sigma 5 and 10 in for Fig 3.22; sigma 8 in assumed for the Fig 3.21 schematic)",
+ "caption": "PDF and CDF of a normal distribution with shaded P(X <= x); PDFs with narrower and wider SD."
+}
