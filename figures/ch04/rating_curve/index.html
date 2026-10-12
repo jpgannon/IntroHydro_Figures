@@ -1,0 +1,91 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Stage–discharge rating curve with 95% interval</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 4 · Streamflow, Runoff Generation, and Overland Flow</p><h1>Stage–discharge rating curve with 95% interval</h1><p>Field discharge measurements, power-law rating fit and 95% band (log–log).</p><p class=mut>Source: Chapter 4 draft; data supplied by the chapter author (figs/fig8_measurements_with_fit.csv, fig8_rating_fit.csv)</p><p><b>Data:</b> <a href='fig8_measurements_with_fit.csv'>fig8_measurements_with_fit.csv</a>, <a href='fig8_rating_fit.csv'>fig8_rating_fit.csv</a></p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Stage–discharge rating curve with 95% interval (Python output)'><p class=mut>Code: <a href='rating_curve.py'>rating_curve.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Stage–discharge rating curve with 95% interval
+Chapter 4 draft; data supplied by the chapter author (figs/fig8_measurements_with_fit.csv, fig8_rating_fit.csv)
+Run: python3 rating_curve.py  -&gt;  figure_python.png&quot;&quot;&quot;
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use(&quot;Agg&quot;)
+import matplotlib.pyplot as plt
+
+a = pd.read_csv(&quot;fig8_measurements_with_fit.csv&quot;)
+
+b = pd.read_csv(&quot;fig8_rating_fit.csv&quot;)
+
+fig, axes = plt.subplots(1, 1, figsize=(7, 5), squeeze=False)
+axes = axes[:, 0]
+ax = axes[0]
+ax.fill_between(b[&quot;gage_height_ft&quot;], b[&quot;Q_lower_95_cfs&quot;], b[&quot;Q_upper_95_cfs&quot;], color=&quot;#9ec5e8&quot;, alpha=0.6, lw=0, label=&quot;95% interval&quot;)
+ax.plot(b[&quot;gage_height_ft&quot;], b[&quot;Q_fit_cfs&quot;], color=&quot;#1f4e79&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;Fitted rating&quot;)
+ax.scatter(a[&quot;gage_height_ft&quot;], a[&quot;discharge_cfs&quot;], s=14, color=&quot;#e8743b&quot;, label=&quot;Measurements&quot;, zorder=3)
+ax.set_yscale(&quot;log&quot;)
+ax.set_xlabel(&quot;Gage height (ft)&quot;)
+ax.set_ylabel(&quot;Discharge (cfs)&quot;)
+ax.legend(frameon=False, loc=&quot;lower right&quot;, fontsize=8)
+ax.grid(alpha=0.25)
+for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+
+fig.tight_layout()
+fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Stage–discharge rating curve with 95% interval (R output)'><p class=mut>Code: <a href='rating_curve.R'>rating_curve.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Stage–discharge rating curve with 95% interval
+# Chapter 4 draft; data supplied by the chapter author (figs/fig8_measurements_with_fit.csv, fig8_rating_fit.csv)
+# Run: Rscript rating_curve.R  -&gt;  figure_r.png (base R, no packages needed)
+
+a &lt;- read.csv(&quot;fig8_measurements_with_fit.csv&quot;, stringsAsFactors = FALSE)
+
+b &lt;- read.csv(&quot;fig8_rating_fit.csv&quot;, stringsAsFactors = FALSE)
+
+png(&quot;figure_r.png&quot;, width = 1050, height = 750, res = 150)
+par(mfrow = c(1, 1), mar = c(4.2, 4.6, 2.2, 1), las = 1)
+plot(NA, xlim = range(c(b$gage_height_ft, b$gage_height_ft, a$gage_height_ft), na.rm = TRUE), ylim = range(c(b$Q_upper_95_cfs, b$Q_lower_95_cfs, b$Q_fit_cfs, a$discharge_cfs), na.rm = TRUE), log = &quot;y&quot;, xlab = &quot;Gage height (ft)&quot;, ylab = &quot;Discharge (cfs)&quot;, bty = &quot;l&quot;, xaxs = &quot;i&quot;)
+grid(col = &quot;grey88&quot;)
+polygon(c(b$gage_height_ft, rev(b$gage_height_ft)), c(b$Q_upper_95_cfs, rev(b$Q_lower_95_cfs)), col = adjustcolor(&quot;#9ec5e8&quot;, alpha.f = 0.6), border = NA)
+lines(b$gage_height_ft, b$Q_fit_cfs, col = &quot;#1f4e79&quot;, lwd = 1.6, lty = 1)
+points(a$gage_height_ft, a$discharge_cfs, col = &quot;#e8743b&quot;, pch = 19, cex = 0.47)
+legend(&quot;bottomright&quot;, legend = c(&quot;95% interval&quot;, &quot;Fitted rating&quot;, &quot;Measurements&quot;), col = c(&quot;#9ec5e8&quot;, &quot;#1f4e79&quot;, &quot;#e8743b&quot;), lty = c(0, 1, 0), pch = c(15, NA, 19), bty = &quot;n&quot;, cex = 0.8)
+
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Stage–discharge rating curve with 95% interval (MATLAB output)'><p class=mut>Code: <a href='rating_curve.m'>rating_curve.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Stage–discharge rating curve with 95% interval
+% Chapter 4 draft; data supplied by the chapter author (figs/fig8_measurements_with_fit.csv, fig8_rating_fit.csv)
+% Run: run rating_curve.m  -&gt;  figure_matlab.png (works in MATLAB and GNU Octave)
+clear; close all;
+
+fid = fopen(&#x27;fig8_measurements_with_fit.csv&#x27;); fgetl(fid);
+C = textscan(fid, &#x27;%s%s%f%f%f%f%f&#x27;, &#x27;Delimiter&#x27;, &#x27;,&#x27;, &#x27;EmptyValue&#x27;, NaN); fclose(fid);
+a.field_visit_id = C{1};
+a.datetime_UTC = C{2};
+a.gage_height_ft = C{3};
+a.discharge_cfs = C{4};
+a.Q_fit_cfs = C{5};
+a.log_residual = C{6};
+a.field_visit_id = strrep(a.field_visit_id, &#x27;&quot;&#x27;, &#x27;&#x27;);
+a.datetime_UTC = strrep(a.datetime_UTC, &#x27;&quot;&#x27;, &#x27;&#x27;);
+
+fid = fopen(&#x27;fig8_rating_fit.csv&#x27;); fgetl(fid);
+C = textscan(fid, &#x27;%f%f%f%f&#x27;, &#x27;Delimiter&#x27;, &#x27;,&#x27;, &#x27;EmptyValue&#x27;, NaN); fclose(fid);
+b.gage_height_ft = C{1};
+b.Q_fit_cfs = C{2};
+b.Q_lower_95_cfs = C{3};
+b.Q_upper_95_cfs = C{4};
+
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 700 500], &#x27;Color&#x27;, &#x27;w&#x27;);
+subplot(1, 1, 1); hold on;
+xx = b.gage_height_ft(:)&#x27;; hi_ = b.Q_upper_95_cfs(:)&#x27;; lo_ = b.Q_lower_95_cfs(:)&#x27;; ok = ~isnan(hi_); h0 = patch(&#x27;XData&#x27;, [xx(ok) fliplr(xx(ok))]&#x27;, &#x27;YData&#x27;, [hi_(ok) fliplr(lo_(ok))]&#x27;, &#x27;FaceColor&#x27;, [0.62, 0.773, 0.91], &#x27;EdgeColor&#x27;, &#x27;none&#x27;, &#x27;FaceAlpha&#x27;, 0.6);
+h1 = plot(b.gage_height_ft, b.Q_fit_cfs, &#x27;-&#x27;, &#x27;Color&#x27;, [0.122, 0.306, 0.475], &#x27;LineWidth&#x27;, 1.6);
+h2 = plot(a.gage_height_ft, a.discharge_cfs, &#x27;o&#x27;, &#x27;MarkerFaceColor&#x27;, [0.91, 0.455, 0.231], &#x27;MarkerEdgeColor&#x27;, [0.91, 0.455, 0.231], &#x27;MarkerSize&#x27;, 4, &#x27;LineStyle&#x27;, &#x27;none&#x27;);
+set(gca, &#x27;YScale&#x27;, &#x27;log&#x27;);
+xlabel(&#x27;Gage height (ft)&#x27;);
+ylabel(&#x27;Discharge (cfs)&#x27;);
+box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2, &#x27;Layer&#x27;, &#x27;top&#x27;);
+legend([h0, h1, h2], {&#x27;95% interval&#x27;, &#x27;Fitted rating&#x27;, &#x27;Measurements&#x27;}, &#x27;Location&#x27;, &#x27;southeast&#x27;); legend boxoff;
+
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

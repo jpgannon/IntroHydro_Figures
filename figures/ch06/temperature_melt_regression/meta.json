@@ -1,0 +1,7 @@
+{
+ "slug": "temperature_melt_regression",
+ "ch": "ch06",
+ "title": "Daily snowmelt vs air temperature, Bogus Basin, April 2023 (degree-day regression)",
+ "source": "Chapter 6 draft; data supplied by chapter author (bogus_basin_april2023_temp_melt.csv)",
+ "caption": "Linear regression of daily melt on mean air temperature; the slope is a degree-day factor."
+}

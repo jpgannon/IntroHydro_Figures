@@ -1,0 +1,7 @@
+{
+ "slug": "baseflow_separation",
+ "ch": "ch04",
+ "title": "Baseflow separation: fixed-interval vs digital filter",
+ "source": "Chapter 4 draft; data supplied by the chapter author (figs/fig9.csv)",
+ "caption": "Daily streamflow with baseflow estimated by two methods, water year 2025."
+}

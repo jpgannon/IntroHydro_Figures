@@ -1,0 +1,7 @@
+{
+ "slug": "runoff_pathways",
+ "ch": "ch04",
+ "title": "Hydrograph by runoff pathway (stacked)",
+ "source": "Chapter 4 draft; data supplied by the chapter author (figs/fig3_timeseries.csv)",
+ "caption": "Streamflow partitioned into channel precipitation, overland flow, interflow and groundwater."
+}

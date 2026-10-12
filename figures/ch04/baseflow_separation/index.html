@@ -1,0 +1,81 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Baseflow separation: fixed-interval vs digital filter</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 4 · Streamflow, Runoff Generation, and Overland Flow</p><h1>Baseflow separation: fixed-interval vs digital filter</h1><p>Daily streamflow with baseflow estimated by two methods, water year 2025.</p><p class=mut>Source: Chapter 4 draft; data supplied by the chapter author (figs/fig9.csv)</p><p><b>Data:</b> <a href='fig9.csv'>fig9.csv</a></p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Baseflow separation: fixed-interval vs digital filter (Python output)'><p class=mut>Code: <a href='baseflow_separation.py'>baseflow_separation.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Baseflow separation: fixed-interval vs digital filter
+Chapter 4 draft; data supplied by the chapter author (figs/fig9.csv)
+Run: python3 baseflow_separation.py  -&gt;  figure_python.png&quot;&quot;&quot;
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use(&quot;Agg&quot;)
+import matplotlib.pyplot as plt
+
+a = pd.read_csv(&quot;fig9.csv&quot;)
+a[&quot;date&quot;] = pd.to_datetime(a[&quot;date&quot;], format=&quot;%d-%b-%Y&quot;)
+
+fig, axes = plt.subplots(1, 1, figsize=(8, 4.5), squeeze=False)
+axes = axes[:, 0]
+ax = axes[0]
+ax.plot(a[&quot;date&quot;], a[&quot;streamflow_cfs&quot;], color=&quot;#222222&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;Streamflow&quot;)
+ax.plot(a[&quot;date&quot;], a[&quot;baseflow_fixed_interval_cfs&quot;], color=&quot;#e8743b&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;Baseflow (fixed interval)&quot;)
+ax.plot(a[&quot;date&quot;], a[&quot;baseflow_digital_filter_cfs&quot;], color=&quot;#1f4e79&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;Baseflow (digital filter)&quot;)
+ax.set_ylabel(&quot;Discharge (cfs)&quot;)
+ax.legend(frameon=False, loc=&quot;upper right&quot;, fontsize=8)
+ax.grid(alpha=0.25)
+for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+
+fig.tight_layout()
+fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Baseflow separation: fixed-interval vs digital filter (R output)'><p class=mut>Code: <a href='baseflow_separation.R'>baseflow_separation.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Baseflow separation: fixed-interval vs digital filter
+# Chapter 4 draft; data supplied by the chapter author (figs/fig9.csv)
+# Run: Rscript baseflow_separation.R  -&gt;  figure_r.png (base R, no packages needed)
+
+a &lt;- read.csv(&quot;fig9.csv&quot;, stringsAsFactors = FALSE)
+a$date &lt;- as.Date(a$date, format = &quot;%d-%b-%Y&quot;)
+
+png(&quot;figure_r.png&quot;, width = 1200, height = 675, res = 150)
+par(mfrow = c(1, 1), mar = c(4.2, 4.6, 2.2, 1), las = 1)
+plot(NA, xlim = range(c(a$date, a$date, a$date), na.rm = TRUE), ylim = range(c(a$streamflow_cfs, a$baseflow_fixed_interval_cfs, a$baseflow_digital_filter_cfs), na.rm = TRUE), log = &quot;&quot;, xlab = &quot;&quot;, ylab = &quot;Discharge (cfs)&quot;, bty = &quot;l&quot;, xaxt = &quot;n&quot;, xaxs = &quot;i&quot;)
+grid(col = &quot;grey88&quot;)
+axis.Date(1, x = a$date, format = &quot;%b %Y&quot;)
+lines(a$date, a$streamflow_cfs, col = &quot;#222222&quot;, lwd = 1.6, lty = 1)
+lines(a$date, a$baseflow_fixed_interval_cfs, col = &quot;#e8743b&quot;, lwd = 1.6, lty = 1)
+lines(a$date, a$baseflow_digital_filter_cfs, col = &quot;#1f4e79&quot;, lwd = 1.6, lty = 1)
+legend(&quot;topright&quot;, legend = c(&quot;Streamflow&quot;, &quot;Baseflow (fixed interval)&quot;, &quot;Baseflow (digital filter)&quot;), col = c(&quot;#222222&quot;, &quot;#e8743b&quot;, &quot;#1f4e79&quot;), lty = c(1, 1, 1), pch = c(NA, NA, NA), bty = &quot;n&quot;, cex = 0.8)
+
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Baseflow separation: fixed-interval vs digital filter (MATLAB output)'><p class=mut>Code: <a href='baseflow_separation.m'>baseflow_separation.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Baseflow separation: fixed-interval vs digital filter
+% Chapter 4 draft; data supplied by the chapter author (figs/fig9.csv)
+% Run: run baseflow_separation.m  -&gt;  figure_matlab.png (works in MATLAB and GNU Octave)
+clear; close all;
+
+fid = fopen(&#x27;fig9.csv&#x27;); fgetl(fid);
+C = textscan(fid, &#x27;%s%f%f%f%f%f&#x27;, &#x27;Delimiter&#x27;, &#x27;,&#x27;, &#x27;EmptyValue&#x27;, NaN); fclose(fid);
+a.date = C{1};
+a.streamflow_cfs = C{2};
+a.baseflow_fixed_interval_cfs = C{3};
+a.baseflow_digital_filter_cfs = C{4};
+a.quickflow_fixed_interval_cfs = C{5};
+a.quickflow_digital_filter_cfs = C{6};
+a.date = strrep(a.date, &#x27;&quot;&#x27;, &#x27;&#x27;);
+a.date = datenum(a.date, &#x27;dd-mmm-yyyy&#x27;);
+a_t0 = floor(min(a.date));  a.date = a.date - a_t0;   % offset keeps plotting precision (Octave uses single precision)
+
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 800 450], &#x27;Color&#x27;, &#x27;w&#x27;);
+subplot(1, 1, 1); hold on;
+h0 = plot(a.date, a.streamflow_cfs, &#x27;-&#x27;, &#x27;Color&#x27;, [0.133, 0.133, 0.133], &#x27;LineWidth&#x27;, 1.6);
+h1 = plot(a.date, a.baseflow_fixed_interval_cfs, &#x27;-&#x27;, &#x27;Color&#x27;, [0.91, 0.455, 0.231], &#x27;LineWidth&#x27;, 1.6);
+h2 = plot(a.date, a.baseflow_digital_filter_cfs, &#x27;-&#x27;, &#x27;Color&#x27;, [0.122, 0.306, 0.475], &#x27;LineWidth&#x27;, 1.6);
+xt = get(gca, &#x27;XTick&#x27;); set(gca, &#x27;XTick&#x27;, xt, &#x27;XTickLabel&#x27;, datestr(xt + a_t0, &#x27;mmm yyyy&#x27;));
+ylabel(&#x27;Discharge (cfs)&#x27;);
+box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2, &#x27;Layer&#x27;, &#x27;top&#x27;);
+legend([h0, h1, h2], {&#x27;Streamflow&#x27;, &#x27;Baseflow (fixed interval)&#x27;, &#x27;Baseflow (digital filter)&#x27;}, &#x27;Location&#x27;, &#x27;northeast&#x27;); legend boxoff;
+
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

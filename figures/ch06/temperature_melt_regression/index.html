@@ -1,0 +1,56 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Daily snowmelt vs air temperature, Bogus Basin, April 2023 (degree-day regression)</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 6 · Snow and Snowmelt</p><h1>Daily snowmelt vs air temperature, Bogus Basin, April 2023 (degree-day regression)</h1><p>Linear regression of daily melt on mean air temperature; the slope is a degree-day factor.</p><p class=mut>Source: Chapter 6 draft; data supplied by chapter author (bogus_basin_april2023_temp_melt.csv)</p><p><b>Data:</b> <a href='bogus_basin_april2023_temp_melt.csv'>bogus_basin_april2023_temp_melt.csv</a></p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Daily snowmelt vs air temperature, Bogus Basin, April 2023 (degree-day regression) (Python output)'><p class=mut>Code: <a href='temperature_melt_regression.py'>temperature_melt_regression.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Daily snowmelt vs air temperature, Bogus Basin, April 2023 (degree-day regression)
+Chapter 6 draft; data supplied by chapter author (bogus_basin_april2023_temp_melt.csv)
+Run: python3 temperature_melt_regression.py -&gt; figure_python.png&quot;&quot;&quot;
+import numpy as np, pandas as pd, matplotlib
+matplotlib.use(&quot;Agg&quot;); import matplotlib.pyplot as plt
+d = pd.read_csv(&quot;bogus_basin_april2023_temp_melt.csv&quot;)
+slope, icpt = np.polyfit(d.temp_c, d.melt_mm, 1)
+r2 = np.corrcoef(d.temp_c, d.melt_mm)[0, 1] ** 2
+xs = np.linspace(d.temp_c.min(), d.temp_c.max(), 50)
+fig, ax = plt.subplots(figsize=(7, 5))
+ax.scatter(d.temp_c, d.melt_mm, color=&quot;#1f4e79&quot;, s=28, label=&quot;Daily observations&quot;)
+ax.plot(xs, icpt + slope * xs, color=&quot;#e8743b&quot;, lw=2, label=f&quot;Fit: melt = {slope:.2f} T {icpt:+.2f}  (R² = {r2:.2f})&quot;)
+ax.set_xlabel(&quot;Mean daily air temperature (°C)&quot;); ax.set_ylabel(&quot;Daily snowmelt (mm)&quot;)
+ax.legend(frameon=False); ax.grid(alpha=0.25)
+for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+fig.tight_layout(); fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Daily snowmelt vs air temperature, Bogus Basin, April 2023 (degree-day regression) (R output)'><p class=mut>Code: <a href='temperature_melt_regression.R'>temperature_melt_regression.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Daily snowmelt vs air temperature, Bogus Basin, April 2023 (degree-day regression)
+# Chapter 6 draft; data supplied by chapter author (bogus_basin_april2023_temp_melt.csv)
+# Run: Rscript temperature_melt_regression.R -&gt; figure_r.png (base R, no packages)
+d &lt;- read.csv(&quot;bogus_basin_april2023_temp_melt.csv&quot;)
+fit &lt;- lm(melt_mm ~ temp_c, data = d)
+r2 &lt;- summary(fit)$r.squared
+png(&quot;figure_r.png&quot;, width = 1050, height = 750, res = 150)
+par(mar = c(4.5, 4.5, 1, 1), las = 1)
+plot(d$temp_c, d$melt_mm, pch = 19, col = &quot;#1f4e79&quot;, xlab = &quot;Mean daily air temperature (°C)&quot;, ylab = &quot;Daily snowmelt (mm)&quot;, bty = &quot;l&quot;)
+grid(col = &quot;grey88&quot;)
+abline(fit, col = &quot;#e8743b&quot;, lwd = 2)
+legend(&quot;topleft&quot;, bty = &quot;n&quot;, lty = c(NA, 1), pch = c(19, NA), col = c(&quot;#1f4e79&quot;, &quot;#e8743b&quot;), lwd = c(NA, 2),
+       legend = c(&quot;Daily observations&quot;, sprintf(&quot;Fit: melt = %.2f T %+.2f  (R² = %.2f)&quot;, coef(fit)[2], coef(fit)[1], r2)))
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Daily snowmelt vs air temperature, Bogus Basin, April 2023 (degree-day regression) (MATLAB output)'><p class=mut>Code: <a href='temperature_melt_regression.m'>temperature_melt_regression.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Daily snowmelt vs air temperature, Bogus Basin, April 2023 (degree-day regression)
+% Chapter 6 draft; data supplied by chapter author (bogus_basin_april2023_temp_melt.csv)
+% Run: run temperature_melt_regression.m -&gt; figure_matlab.png (MATLAB or GNU Octave)
+clear; close all;
+fid = fopen(&#x27;bogus_basin_april2023_temp_melt.csv&#x27;); fgetl(fid);
+C = textscan(fid, &#x27;%f%f&#x27;, &#x27;Delimiter&#x27;, &#x27;,&#x27;); fclose(fid);
+T = C{1}; melt = C{2};
+p = polyfit(T, melt, 1); cc = corrcoef(T, melt); r2 = cc(1,2)^2;
+xs = linspace(min(T), max(T), 50);
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 700 500], &#x27;Color&#x27;, &#x27;w&#x27;); hold on;
+h1 = plot(T, melt, &#x27;o&#x27;, &#x27;MarkerFaceColor&#x27;, [0.122 0.306 0.475], &#x27;MarkerEdgeColor&#x27;, [0.122 0.306 0.475], &#x27;MarkerSize&#x27;, 5, &#x27;LineStyle&#x27;, &#x27;none&#x27;);
+h2 = plot(xs, polyval(p, xs), &#x27;-&#x27;, &#x27;Color&#x27;, [0.91 0.455 0.231], &#x27;LineWidth&#x27;, 2);
+xlabel(&#x27;Mean daily air temperature (°C)&#x27;); ylabel(&#x27;Daily snowmelt (mm)&#x27;);
+legend([h1 h2], {&#x27;Daily observations&#x27;, sprintf(&#x27;Fit: melt = %.2f T %+.2f  (R^2 = %.2f)&#x27;, p(1), p(2), r2)}, &#x27;Location&#x27;, &#x27;northwest&#x27;); legend boxoff;
+box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2);
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

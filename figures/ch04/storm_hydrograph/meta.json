@@ -1,0 +1,7 @@
+{
+ "slug": "storm_hydrograph",
+ "ch": "ch04",
+ "title": "Storm hydrograph with rainfall, baseflow and stormflow",
+ "source": "Chapter 4 draft; data supplied by the chapter author (figs/fig1_timeseries.csv)",
+ "caption": "Streamflow response to a rainfall event, separated into baseflow and stormflow."
+}

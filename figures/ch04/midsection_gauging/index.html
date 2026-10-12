@@ -1,0 +1,97 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Velocity–area (mid-section) discharge measurement</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 4 · Streamflow, Runoff Generation, and Overland Flow</p><h1>Velocity–area (mid-section) discharge measurement</h1><p>Channel cross-section and discharge contributed by each measurement station.</p><p class=mut>Source: Chapter 4 draft; data supplied by the chapter author (figs/fig7_midsection.csv)</p><p><b>Data:</b> <a href='fig7_midsection.csv'>fig7_midsection.csv</a></p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Velocity–area (mid-section) discharge measurement (Python output)'><p class=mut>Code: <a href='midsection_gauging.py'>midsection_gauging.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Velocity–area (mid-section) discharge measurement
+Chapter 4 draft; data supplied by the chapter author (figs/fig7_midsection.csv)
+Run: python3 midsection_gauging.py  -&gt;  figure_python.png&quot;&quot;&quot;
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use(&quot;Agg&quot;)
+import matplotlib.pyplot as plt
+
+a = pd.read_csv(&quot;fig7_midsection.csv&quot;)
+a[&quot;negd&quot;] = -a[&quot;depth_ft&quot;]
+
+fig, axes = plt.subplots(2, 1, figsize=(8, 6.5), squeeze=False, gridspec_kw={&quot;height_ratios&quot;: [1, 1]})
+axes = axes[:, 0]
+ax = axes[0]
+ax.fill_between(a[&quot;distance_ft&quot;], 0, a[&quot;negd&quot;], color=&quot;#7fb3d5&quot;, alpha=0.8, lw=0, label=&quot;Water depth&quot;)
+ax.set_xlabel(&quot;Distance from left edge of water (ft)&quot;)
+ax.set_ylabel(&quot;Depth (ft, below water surface)&quot;)
+ax.legend(frameon=False, loc=&quot;lower right&quot;, fontsize=8)
+ax.grid(alpha=0.25)
+for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+
+ax = axes[1]
+ax.bar(a[&quot;distance_ft&quot;], a[&quot;discharge_ft3_per_s&quot;], width=3.0, color=&quot;#e8743b&quot;, edgecolor=&quot;none&quot;)
+ax.set_xlabel(&quot;Distance from left edge of water (ft)&quot;)
+ax.set_ylabel(&quot;Station discharge (ft³/s)&quot;)
+ax.grid(alpha=0.25)
+for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+
+fig.tight_layout()
+fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Velocity–area (mid-section) discharge measurement (R output)'><p class=mut>Code: <a href='midsection_gauging.R'>midsection_gauging.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Velocity–area (mid-section) discharge measurement
+# Chapter 4 draft; data supplied by the chapter author (figs/fig7_midsection.csv)
+# Run: Rscript midsection_gauging.R  -&gt;  figure_r.png (base R, no packages needed)
+
+a &lt;- read.csv(&quot;fig7_midsection.csv&quot;, stringsAsFactors = FALSE)
+a$negd &lt;- -a$depth_ft
+
+png(&quot;figure_r.png&quot;, width = 1200, height = 975, res = 150)
+par(mfrow = c(2, 1), mar = c(4.2, 4.6, 2.2, 1), las = 1)
+layout(matrix(1:2, ncol = 1), heights = c(1,1))
+par(mar = c(4.2, 4.6, 2.2, 1), las = 1)
+plot(NA, xlim = range(c(a$distance_ft), na.rm = TRUE), ylim = range(c(a$negd, 0), na.rm = TRUE), log = &quot;&quot;, xlab = &quot;Distance from left edge of water (ft)&quot;, ylab = &quot;Depth (ft, below water surface)&quot;, bty = &quot;l&quot;, xaxs = &quot;i&quot;)
+grid(col = &quot;grey88&quot;)
+polygon(c(a$distance_ft, rev(a$distance_ft)), c(a$negd, rev(rep(0, length(a$distance_ft)))), col = adjustcolor(&quot;#7fb3d5&quot;, alpha.f = 0.8), border = NA)
+legend(&quot;bottomright&quot;, legend = c(&quot;Water depth&quot;), col = c(&quot;#7fb3d5&quot;), lty = c(0), pch = c(15), bty = &quot;n&quot;, cex = 0.8)
+
+plot(NA, xlim = range(c(a$distance_ft), na.rm = TRUE), ylim = range(c(a$discharge_ft3_per_s, 0), na.rm = TRUE), log = &quot;&quot;, xlab = &quot;Distance from left edge of water (ft)&quot;, ylab = &quot;Station discharge (ft³/s)&quot;, bty = &quot;l&quot;, xaxs = &quot;i&quot;)
+grid(col = &quot;grey88&quot;)
+rect(a$distance_ft - 3.0/2, 0, a$distance_ft + 3.0/2, a$discharge_ft3_per_s, col = &quot;#e8743b&quot;, border = NA)
+
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Velocity–area (mid-section) discharge measurement (MATLAB output)'><p class=mut>Code: <a href='midsection_gauging.m'>midsection_gauging.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Velocity–area (mid-section) discharge measurement
+% Chapter 4 draft; data supplied by the chapter author (figs/fig7_midsection.csv)
+% Run: run midsection_gauging.m  -&gt;  figure_matlab.png (works in MATLAB and GNU Octave)
+clear; close all;
+
+fid = fopen(&#x27;fig7_midsection.csv&#x27;); fgetl(fid);
+C = textscan(fid, &#x27;%s%f%f%f%f%f%f%f%s&#x27;, &#x27;Delimiter&#x27;, &#x27;,&#x27;, &#x27;EmptyValue&#x27;, NaN); fclose(fid);
+a.station = C{1};
+a.distance_ft = C{2};
+a.depth_ft = C{3};
+a.mean_velocity_ft_per_s = C{4};
+a.width_ft = C{5};
+a.area_ft2 = C{6};
+a.discharge_ft3_per_s = C{7};
+a.percent_of_Q = C{8};
+a.velocity_method = C{9};
+a.station = strrep(a.station, &#x27;&quot;&#x27;, &#x27;&#x27;);
+a.velocity_method = strrep(a.velocity_method, &#x27;&quot;&#x27;, &#x27;&#x27;);
+a.negd = -a.depth_ft;
+
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 800 650], &#x27;Color&#x27;, &#x27;w&#x27;);
+axes(&#x27;Position&#x27;, [0.09 0.510 0.88 0.390]); hold on;
+xx = a.distance_ft(:)&#x27;; hi_ = a.negd(:)&#x27;; lo_ = zeros(size(a.distance_ft))(:)&#x27;; ok = ~isnan(hi_); h0 = patch(&#x27;XData&#x27;, [xx(ok) fliplr(xx(ok))]&#x27;, &#x27;YData&#x27;, [hi_(ok) fliplr(lo_(ok))]&#x27;, &#x27;FaceColor&#x27;, [0.498, 0.702, 0.835], &#x27;EdgeColor&#x27;, &#x27;none&#x27;, &#x27;FaceAlpha&#x27;, 0.8);
+xlabel(&#x27;Distance from left edge of water (ft)&#x27;);
+ylabel(&#x27;Depth (ft, below water surface)&#x27;);
+box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2, &#x27;Layer&#x27;, &#x27;top&#x27;);
+legend([h0], {&#x27;Water depth&#x27;}, &#x27;Location&#x27;, &#x27;southeast&#x27;); legend boxoff;
+
+axes(&#x27;Position&#x27;, [0.09 0.080 0.88 0.390]); hold on;
+xb = a.distance_ft(:); yb = a.discharge_ft3_per_s(:); h0 = patch(&#x27;XData&#x27;, [xb-3.0/2 xb+3.0/2 xb+3.0/2 xb-3.0/2]&#x27;, &#x27;YData&#x27;, [zeros(size(yb)) zeros(size(yb)) yb yb]&#x27;, &#x27;FaceColor&#x27;, [0.91, 0.455, 0.231], &#x27;EdgeColor&#x27;, &#x27;none&#x27;);
+xlabel(&#x27;Distance from left edge of water (ft)&#x27;);
+ylabel(&#x27;Station discharge (ft³/s)&#x27;);
+box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2, &#x27;Layer&#x27;, &#x27;top&#x27;);
+
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

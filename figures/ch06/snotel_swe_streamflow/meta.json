@@ -1,0 +1,7 @@
+{
+ "slug": "snotel_swe_streamflow",
+ "ch": "ch06",
+ "title": "SNOTEL snow water equivalent, snow depth and USGS streamflow, WY2011\u2013WY2012",
+ "source": "Chapter 6 draft; data supplied by chapter author (snotel1031_usgs06614800_WY2011_WY2012.csv)",
+ "caption": "SNOTEL site 1031 SWE and depth with USGS 06614800 discharge."
+}

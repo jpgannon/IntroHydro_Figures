@@ -1,0 +1,7 @@
+{
+ "slug": "hydraulic_conductivity_ratio",
+ "ch": "ch04",
+ "title": "Conductivity ratio vs slope for different hillslope length-to-depth ratios",
+ "source": "Chapter 4 draft; data supplied by the chapter author (figs/fig11.csv)",
+ "caption": "Ratio of lateral conductivity needed to transmit recharge vs hillslope slope, for several slope lengths."
+}

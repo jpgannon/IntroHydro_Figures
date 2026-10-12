@@ -1,0 +1,94 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Conductivity ratio vs slope for different hillslope length-to-depth ratios</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 4 · Streamflow, Runoff Generation, and Overland Flow</p><h1>Conductivity ratio vs slope for different hillslope length-to-depth ratios</h1><p>Ratio of lateral conductivity needed to transmit recharge vs hillslope slope, for several slope lengths.</p><p class=mut>Source: Chapter 4 draft; data supplied by the chapter author (figs/fig11.csv)</p><p><b>Data:</b> <a href='fig11.csv'>fig11.csv</a></p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Conductivity ratio vs slope for different hillslope length-to-depth ratios (Python output)'><p class=mut>Code: <a href='hydraulic_conductivity_ratio.py'>hydraulic_conductivity_ratio.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Conductivity ratio vs slope for different hillslope length-to-depth ratios
+Chapter 4 draft; data supplied by the chapter author (figs/fig11.csv)
+Run: python3 hydraulic_conductivity_ratio.py  -&gt;  figure_python.png&quot;&quot;&quot;
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use(&quot;Agg&quot;)
+import matplotlib.pyplot as plt
+
+a = pd.read_csv(&quot;fig11.csv&quot;)
+
+fig, axes = plt.subplots(1, 1, figsize=(7, 5), squeeze=False)
+axes = axes[:, 0]
+ax = axes[0]
+ax.plot(a[&quot;slope&quot;], a[&quot;Kratio_LD_10m&quot;], color=&quot;#08306b&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;10 m&quot;)
+ax.plot(a[&quot;slope&quot;], a[&quot;Kratio_LD_20m&quot;], color=&quot;#08519c&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;20 m&quot;)
+ax.plot(a[&quot;slope&quot;], a[&quot;Kratio_LD_30m&quot;], color=&quot;#2171b5&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;30 m&quot;)
+ax.plot(a[&quot;slope&quot;], a[&quot;Kratio_LD_40m&quot;], color=&quot;#4292c6&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;40 m&quot;)
+ax.plot(a[&quot;slope&quot;], a[&quot;Kratio_LD_50m&quot;], color=&quot;#6baed6&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;50 m&quot;)
+ax.plot(a[&quot;slope&quot;], a[&quot;Kratio_LD_100m&quot;], color=&quot;#9ecae1&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;100 m&quot;)
+ax.plot(a[&quot;slope&quot;], a[&quot;Kratio_LD_200m&quot;], color=&quot;#c6dbef&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;200 m&quot;)
+ax.set_xscale(&quot;log&quot;)
+ax.set_yscale(&quot;log&quot;)
+ax.set_xlabel(&quot;Slope (m/m)&quot;)
+ax.set_ylabel(&quot;K ratio&quot;)
+ax.legend(frameon=False, loc=&quot;upper right&quot;, fontsize=8)
+ax.grid(alpha=0.25)
+for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+
+fig.tight_layout()
+fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Conductivity ratio vs slope for different hillslope length-to-depth ratios (R output)'><p class=mut>Code: <a href='hydraulic_conductivity_ratio.R'>hydraulic_conductivity_ratio.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Conductivity ratio vs slope for different hillslope length-to-depth ratios
+# Chapter 4 draft; data supplied by the chapter author (figs/fig11.csv)
+# Run: Rscript hydraulic_conductivity_ratio.R  -&gt;  figure_r.png (base R, no packages needed)
+
+a &lt;- read.csv(&quot;fig11.csv&quot;, stringsAsFactors = FALSE)
+
+png(&quot;figure_r.png&quot;, width = 1050, height = 750, res = 150)
+par(mfrow = c(1, 1), mar = c(4.2, 4.6, 2.2, 1), las = 1)
+plot(NA, xlim = range(c(a$slope, a$slope, a$slope, a$slope, a$slope, a$slope, a$slope), na.rm = TRUE), ylim = range(c(a$Kratio_LD_10m, a$Kratio_LD_20m, a$Kratio_LD_30m, a$Kratio_LD_40m, a$Kratio_LD_50m, a$Kratio_LD_100m, a$Kratio_LD_200m), na.rm = TRUE), log = &quot;xy&quot;, xlab = &quot;Slope (m/m)&quot;, ylab = &quot;K ratio&quot;, bty = &quot;l&quot;, xaxs = &quot;i&quot;)
+grid(col = &quot;grey88&quot;)
+lines(a$slope, a$Kratio_LD_10m, col = &quot;#08306b&quot;, lwd = 1.6, lty = 1)
+lines(a$slope, a$Kratio_LD_20m, col = &quot;#08519c&quot;, lwd = 1.6, lty = 1)
+lines(a$slope, a$Kratio_LD_30m, col = &quot;#2171b5&quot;, lwd = 1.6, lty = 1)
+lines(a$slope, a$Kratio_LD_40m, col = &quot;#4292c6&quot;, lwd = 1.6, lty = 1)
+lines(a$slope, a$Kratio_LD_50m, col = &quot;#6baed6&quot;, lwd = 1.6, lty = 1)
+lines(a$slope, a$Kratio_LD_100m, col = &quot;#9ecae1&quot;, lwd = 1.6, lty = 1)
+lines(a$slope, a$Kratio_LD_200m, col = &quot;#c6dbef&quot;, lwd = 1.6, lty = 1)
+legend(&quot;topright&quot;, legend = c(&quot;10 m&quot;, &quot;20 m&quot;, &quot;30 m&quot;, &quot;40 m&quot;, &quot;50 m&quot;, &quot;100 m&quot;, &quot;200 m&quot;), col = c(&quot;#08306b&quot;, &quot;#08519c&quot;, &quot;#2171b5&quot;, &quot;#4292c6&quot;, &quot;#6baed6&quot;, &quot;#9ecae1&quot;, &quot;#c6dbef&quot;), lty = c(1, 1, 1, 1, 1, 1, 1), pch = c(NA, NA, NA, NA, NA, NA, NA), bty = &quot;n&quot;, cex = 0.8)
+
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Conductivity ratio vs slope for different hillslope length-to-depth ratios (MATLAB output)'><p class=mut>Code: <a href='hydraulic_conductivity_ratio.m'>hydraulic_conductivity_ratio.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Conductivity ratio vs slope for different hillslope length-to-depth ratios
+% Chapter 4 draft; data supplied by the chapter author (figs/fig11.csv)
+% Run: run hydraulic_conductivity_ratio.m  -&gt;  figure_matlab.png (works in MATLAB and GNU Octave)
+clear; close all;
+
+fid = fopen(&#x27;fig11.csv&#x27;); fgetl(fid);
+C = textscan(fid, &#x27;%f%f%f%f%f%f%f%f&#x27;, &#x27;Delimiter&#x27;, &#x27;,&#x27;, &#x27;EmptyValue&#x27;, NaN); fclose(fid);
+a.slope = C{1};
+a.Kratio_LD_10m = C{2};
+a.Kratio_LD_20m = C{3};
+a.Kratio_LD_30m = C{4};
+a.Kratio_LD_40m = C{5};
+a.Kratio_LD_50m = C{6};
+a.Kratio_LD_100m = C{7};
+a.Kratio_LD_200m = C{8};
+
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 700 500], &#x27;Color&#x27;, &#x27;w&#x27;);
+subplot(1, 1, 1); hold on;
+h0 = plot(a.slope, a.Kratio_LD_10m, &#x27;-&#x27;, &#x27;Color&#x27;, [0.031, 0.188, 0.42], &#x27;LineWidth&#x27;, 1.6);
+h1 = plot(a.slope, a.Kratio_LD_20m, &#x27;-&#x27;, &#x27;Color&#x27;, [0.031, 0.318, 0.612], &#x27;LineWidth&#x27;, 1.6);
+h2 = plot(a.slope, a.Kratio_LD_30m, &#x27;-&#x27;, &#x27;Color&#x27;, [0.129, 0.443, 0.71], &#x27;LineWidth&#x27;, 1.6);
+h3 = plot(a.slope, a.Kratio_LD_40m, &#x27;-&#x27;, &#x27;Color&#x27;, [0.259, 0.573, 0.776], &#x27;LineWidth&#x27;, 1.6);
+h4 = plot(a.slope, a.Kratio_LD_50m, &#x27;-&#x27;, &#x27;Color&#x27;, [0.42, 0.682, 0.839], &#x27;LineWidth&#x27;, 1.6);
+h5 = plot(a.slope, a.Kratio_LD_100m, &#x27;-&#x27;, &#x27;Color&#x27;, [0.62, 0.792, 0.882], &#x27;LineWidth&#x27;, 1.6);
+h6 = plot(a.slope, a.Kratio_LD_200m, &#x27;-&#x27;, &#x27;Color&#x27;, [0.776, 0.859, 0.937], &#x27;LineWidth&#x27;, 1.6);
+set(gca, &#x27;XScale&#x27;, &#x27;log&#x27;);
+set(gca, &#x27;YScale&#x27;, &#x27;log&#x27;);
+xlabel(&#x27;Slope (m/m)&#x27;);
+ylabel(&#x27;K ratio&#x27;);
+box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2, &#x27;Layer&#x27;, &#x27;top&#x27;);
+legend([h0, h1, h2, h3, h4, h5, h6], {&#x27;10 m&#x27;, &#x27;20 m&#x27;, &#x27;30 m&#x27;, &#x27;40 m&#x27;, &#x27;50 m&#x27;, &#x27;100 m&#x27;, &#x27;200 m&#x27;}, &#x27;Location&#x27;, &#x27;northeast&#x27;); legend boxoff;
+
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

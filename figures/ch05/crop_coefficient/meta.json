@@ -1,0 +1,8 @@
+{
+ "slug": "crop_coefficient",
+ "ch": "ch05",
+ "title": "Crop coefficient curve, sweet corn (Idaho, USA)",
+ "source": "Chapter 5 draft; data from \"Fig # - CropCoefficientCurve.xlsx\"",
+ "caption": "Crop coefficient Kc through four growth stages.",
+ "notes": "The five breakpoints are embedded in the script; the author's workbook contains duplicate rows."
+}

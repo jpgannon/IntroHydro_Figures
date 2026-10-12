@@ -1,0 +1,85 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Latent heat flux (LE) from an eddy-covariance flux tower, one week in summer</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 5 · Energy Cycle and Evapotranspiration</p><h1>Latent heat flux (LE) from an eddy-covariance flux tower, one week in summer</h1><p>30-minute LE with random uncertainty, Willow Creek, Wisconsin, 28 Jul–3 Aug 2025.</p><p class=mut>Source: Chapter 5 draft; data: Desai (2026), AmeriFlux FLUXNET-1F US-WCr Willow Creek v1.3_r1, doi:10.17190/AMF/3028955 (CC-BY-4.0)</p><p><b>Data:</b> <a href='flux_tower_LE.csv'>flux_tower_LE.csv</a></p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Latent heat flux (LE) from an eddy-covariance flux tower, one week in summer (Python output)'><p class=mut>Code: <a href='flux_tower_latent_heat.py'>flux_tower_latent_heat.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Latent heat flux (LE) from an eddy-covariance flux tower, one week in summer
+Chapter 5 draft; data: Desai (2026), AmeriFlux FLUXNET-1F US-WCr Willow Creek v1.3_r1, doi:10.17190/AMF/3028955 (CC-BY-4.0)
+Run: python3 flux_tower_latent_heat.py  -&gt;  figure_python.png&quot;&quot;&quot;
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use(&quot;Agg&quot;)
+import matplotlib.pyplot as plt
+
+a = pd.read_csv(&quot;flux_tower_LE.csv&quot;)
+a[&quot;TIMESTAMP_START&quot;] = pd.to_datetime(a[&quot;TIMESTAMP_START&quot;], format=&quot;%Y-%m-%d %H:%M:%S&quot;)
+a[&quot;lo&quot;] = a[&quot;LE_CORR_Wm2&quot;] - a[&quot;LE_RANDUNC_Wm2&quot;]
+a[&quot;hi&quot;] = a[&quot;LE_CORR_Wm2&quot;] + a[&quot;LE_RANDUNC_Wm2&quot;]
+
+fig, axes = plt.subplots(1, 1, figsize=(9, 4.5), squeeze=False)
+axes = axes[:, 0]
+ax = axes[0]
+ax.fill_between(a[&quot;TIMESTAMP_START&quot;], a[&quot;lo&quot;], a[&quot;hi&quot;], color=&quot;#9ec5e8&quot;, alpha=0.6, lw=0, label=&quot;± random uncertainty&quot;)
+ax.plot(a[&quot;TIMESTAMP_START&quot;], a[&quot;LE_CORR_Wm2&quot;], color=&quot;#1f4e79&quot;, lw=1, ls=&quot;-&quot;, label=&quot;LE (corrected)&quot;)
+import matplotlib.dates as mdates
+ax.xaxis.set_major_formatter(mdates.DateFormatter(&quot;%d %b&quot;))
+ax.set_ylabel(&quot;Latent heat flux, LE (W/m²)&quot;)
+ax.legend(frameon=False, loc=&quot;upper right&quot;, fontsize=8)
+ax.grid(alpha=0.25)
+for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+
+fig.tight_layout()
+fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Latent heat flux (LE) from an eddy-covariance flux tower, one week in summer (R output)'><p class=mut>Code: <a href='flux_tower_latent_heat.R'>flux_tower_latent_heat.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Latent heat flux (LE) from an eddy-covariance flux tower, one week in summer
+# Chapter 5 draft; data: Desai (2026), AmeriFlux FLUXNET-1F US-WCr Willow Creek v1.3_r1, doi:10.17190/AMF/3028955 (CC-BY-4.0)
+# Run: Rscript flux_tower_latent_heat.R  -&gt;  figure_r.png (base R, no packages needed)
+
+a &lt;- read.csv(&quot;flux_tower_LE.csv&quot;, stringsAsFactors = FALSE)
+a$TIMESTAMP_START &lt;- as.POSIXct(a$TIMESTAMP_START, format = &quot;%Y-%m-%d %H:%M:%S&quot;, tz = &quot;UTC&quot;)
+a$lo &lt;- a$LE_CORR_Wm2 - a$LE_RANDUNC_Wm2
+a$hi &lt;- a$LE_CORR_Wm2 + a$LE_RANDUNC_Wm2
+
+png(&quot;figure_r.png&quot;, width = 1350, height = 675, res = 150)
+par(mfrow = c(1, 1), mar = c(4.2, 4.6, 2.2, 1), las = 1)
+plot(NA, xlim = range(c(a$TIMESTAMP_START, a$TIMESTAMP_START), na.rm = TRUE), ylim = range(c(a$hi, a$lo, a$LE_CORR_Wm2, 0), na.rm = TRUE), log = &quot;&quot;, xlab = &quot;&quot;, ylab = &quot;Latent heat flux, LE (W/m²)&quot;, bty = &quot;l&quot;, xaxt = &quot;n&quot;, xaxs = &quot;i&quot;)
+grid(col = &quot;grey88&quot;)
+axis.POSIXct(1, x = a$TIMESTAMP_START, format = &quot;%d %b&quot;)
+polygon(c(a$TIMESTAMP_START, rev(a$TIMESTAMP_START)), c(a$hi, rev(a$lo)), col = adjustcolor(&quot;#9ec5e8&quot;, alpha.f = 0.6), border = NA)
+lines(a$TIMESTAMP_START, a$LE_CORR_Wm2, col = &quot;#1f4e79&quot;, lwd = 1, lty = 1)
+legend(&quot;topright&quot;, legend = c(&quot;± random uncertainty&quot;, &quot;LE (corrected)&quot;), col = c(&quot;#9ec5e8&quot;, &quot;#1f4e79&quot;), lty = c(0, 1), pch = c(15, NA), bty = &quot;n&quot;, cex = 0.8)
+
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Latent heat flux (LE) from an eddy-covariance flux tower, one week in summer (MATLAB output)'><p class=mut>Code: <a href='flux_tower_latent_heat.m'>flux_tower_latent_heat.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Latent heat flux (LE) from an eddy-covariance flux tower, one week in summer
+% Chapter 5 draft; data: Desai (2026), AmeriFlux FLUXNET-1F US-WCr Willow Creek v1.3_r1, doi:10.17190/AMF/3028955 (CC-BY-4.0)
+% Run: run flux_tower_latent_heat.m  -&gt;  figure_matlab.png (works in MATLAB and GNU Octave)
+clear; close all;
+
+fid = fopen(&#x27;flux_tower_LE.csv&#x27;); fgetl(fid);
+C = textscan(fid, &#x27;%s%s%f%f&#x27;, &#x27;Delimiter&#x27;, &#x27;,&#x27;, &#x27;EmptyValue&#x27;, NaN); fclose(fid);
+a.TIMESTAMP_START = C{1};
+a.TIMESTAMP_END = C{2};
+a.LE_CORR_Wm2 = C{3};
+a.LE_RANDUNC_Wm2 = C{4};
+a.TIMESTAMP_START = strrep(a.TIMESTAMP_START, &#x27;&quot;&#x27;, &#x27;&#x27;);
+a.TIMESTAMP_END = strrep(a.TIMESTAMP_END, &#x27;&quot;&#x27;, &#x27;&#x27;);
+a.TIMESTAMP_START = datenum(a.TIMESTAMP_START, &#x27;yyyy-mm-dd HH:MM:SS&#x27;);
+a_t0 = floor(min(a.TIMESTAMP_START));  a.TIMESTAMP_START = a.TIMESTAMP_START - a_t0;   % offset keeps plotting precision (Octave uses single precision)
+a.lo = a.LE_CORR_Wm2 - a.LE_RANDUNC_Wm2;
+a.hi = a.LE_CORR_Wm2 + a.LE_RANDUNC_Wm2;
+
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 900 450], &#x27;Color&#x27;, &#x27;w&#x27;);
+subplot(1, 1, 1); hold on;
+xx = a.TIMESTAMP_START(:)&#x27;; hi_ = a.hi(:)&#x27;; lo_ = a.lo(:)&#x27;; ok = ~isnan(hi_); h0 = patch(&#x27;XData&#x27;, [xx(ok) fliplr(xx(ok))]&#x27;, &#x27;YData&#x27;, [hi_(ok) fliplr(lo_(ok))]&#x27;, &#x27;FaceColor&#x27;, [0.62, 0.773, 0.91], &#x27;EdgeColor&#x27;, &#x27;none&#x27;, &#x27;FaceAlpha&#x27;, 0.6);
+h1 = plot(a.TIMESTAMP_START, a.LE_CORR_Wm2, &#x27;-&#x27;, &#x27;Color&#x27;, [0.122, 0.306, 0.475], &#x27;LineWidth&#x27;, 1);
+xt = get(gca, &#x27;XTick&#x27;); set(gca, &#x27;XTick&#x27;, xt, &#x27;XTickLabel&#x27;, datestr(xt + a_t0, &#x27;dd mmm&#x27;));
+ylabel(&#x27;Latent heat flux, LE (W/m²)&#x27;);
+box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2, &#x27;Layer&#x27;, &#x27;top&#x27;);
+legend([h0, h1], {&#x27;± random uncertainty&#x27;, &#x27;LE (corrected)&#x27;}, &#x27;Location&#x27;, &#x27;northeast&#x27;); legend boxoff;
+
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

@@ -1,0 +1,81 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Stream length vs discharge (expansion and contraction of the network)</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 4 · Streamflow, Runoff Generation, and Overland Flow</p><h1>Stream length vs discharge (expansion and contraction of the network)</h1><p>Surveyed stream length (points) and fitted relationship with discharge.</p><p class=mut>Source: Chapter 4 draft; data supplied by the chapter author (figs/fig12.csv)</p><p><b>Data:</b> <a href='fig12.csv'>fig12.csv</a></p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Stream length vs discharge (expansion and contraction of the network) (Python output)'><p class=mut>Code: <a href='stream_length_discharge.py'>stream_length_discharge.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Stream length vs discharge (expansion and contraction of the network)
+Chapter 4 draft; data supplied by the chapter author (figs/fig12.csv)
+Run: python3 stream_length_discharge.py  -&gt;  figure_python.png&quot;&quot;&quot;
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use(&quot;Agg&quot;)
+import matplotlib.pyplot as plt
+
+a = pd.read_csv(&quot;fig12.csv&quot;)
+
+fig, axes = plt.subplots(1, 1, figsize=(7, 5), squeeze=False)
+axes = axes[:, 0]
+ax = axes[0]
+ax.plot(a[a[&quot;record_type&quot;] == &quot;fit&quot;][&quot;discharge_mm_per_d&quot;], a[a[&quot;record_type&quot;] == &quot;fit&quot;][&quot;stream_length_fit_km&quot;], color=&quot;#1f4e79&quot;, lw=1.6, ls=&quot;-&quot;, label=&quot;Fit&quot;)
+ax.scatter(a[a[&quot;record_type&quot;] == &quot;observation&quot;][&quot;discharge_mm_per_d&quot;], a[a[&quot;record_type&quot;] == &quot;observation&quot;][&quot;stream_length_obs_km&quot;], s=30, color=&quot;#e8743b&quot;, label=&quot;Observed surveys&quot;, zorder=3)
+ax.set_xscale(&quot;log&quot;)
+ax.set_xlabel(&quot;Discharge (mm/day)&quot;)
+ax.set_ylabel(&quot;Flowing stream length (km)&quot;)
+ax.legend(frameon=False, loc=&quot;upper left&quot;, fontsize=8)
+ax.grid(alpha=0.25)
+for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+
+fig.tight_layout()
+fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Stream length vs discharge (expansion and contraction of the network) (R output)'><p class=mut>Code: <a href='stream_length_discharge.R'>stream_length_discharge.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Stream length vs discharge (expansion and contraction of the network)
+# Chapter 4 draft; data supplied by the chapter author (figs/fig12.csv)
+# Run: Rscript stream_length_discharge.R  -&gt;  figure_r.png (base R, no packages needed)
+
+a &lt;- read.csv(&quot;fig12.csv&quot;, stringsAsFactors = FALSE)
+
+png(&quot;figure_r.png&quot;, width = 1050, height = 750, res = 150)
+par(mfrow = c(1, 1), mar = c(4.2, 4.6, 2.2, 1), las = 1)
+plot(NA, xlim = range(c(a[a$record_type == &quot;fit&quot;, ]$discharge_mm_per_d, a[a$record_type == &quot;observation&quot;, ]$discharge_mm_per_d), na.rm = TRUE), ylim = range(c(a[a$record_type == &quot;fit&quot;, ]$stream_length_fit_km, a[a$record_type == &quot;observation&quot;, ]$stream_length_obs_km), na.rm = TRUE), log = &quot;x&quot;, xlab = &quot;Discharge (mm/day)&quot;, ylab = &quot;Flowing stream length (km)&quot;, bty = &quot;l&quot;, xaxs = &quot;i&quot;)
+grid(col = &quot;grey88&quot;)
+lines(a[a$record_type == &quot;fit&quot;, ]$discharge_mm_per_d, a[a$record_type == &quot;fit&quot;, ]$stream_length_fit_km, col = &quot;#1f4e79&quot;, lwd = 1.6, lty = 1)
+points(a[a$record_type == &quot;observation&quot;, ]$discharge_mm_per_d, a[a$record_type == &quot;observation&quot;, ]$stream_length_obs_km, col = &quot;#e8743b&quot;, pch = 19, cex = 1.0)
+legend(&quot;topleft&quot;, legend = c(&quot;Fit&quot;, &quot;Observed surveys&quot;), col = c(&quot;#1f4e79&quot;, &quot;#e8743b&quot;), lty = c(1, 0), pch = c(NA, 19), bty = &quot;n&quot;, cex = 0.8)
+
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Stream length vs discharge (expansion and contraction of the network) (MATLAB output)'><p class=mut>Code: <a href='stream_length_discharge.m'>stream_length_discharge.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Stream length vs discharge (expansion and contraction of the network)
+% Chapter 4 draft; data supplied by the chapter author (figs/fig12.csv)
+% Run: run stream_length_discharge.m  -&gt;  figure_matlab.png (works in MATLAB and GNU Octave)
+clear; close all;
+
+fid = fopen(&#x27;fig12.csv&#x27;); fgetl(fid);
+C = textscan(fid, &#x27;%s%f%f%f%f%f%f&#x27;, &#x27;Delimiter&#x27;, &#x27;,&#x27;, &#x27;EmptyValue&#x27;, NaN); fclose(fid);
+a.record_type = C{1};
+a.survey_date_MMDD = C{2};
+a.discharge_mm_per_d = C{3};
+a.stream_length_obs_km = C{4};
+a.stream_length_fit_km = C{5};
+a.drainage_density = C{6};
+a.exceedance_prob_pct = C{7};
+a.record_type = strrep(a.record_type, &#x27;&quot;&#x27;, &#x27;&#x27;);
+
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 700 500], &#x27;Color&#x27;, &#x27;w&#x27;);
+subplot(1, 1, 1); hold on;
+
+w = strcmp(a.record_type, &#x27;fit&#x27;);
+h0 = plot(a.discharge_mm_per_d(w), a.stream_length_fit_km(w), &#x27;-&#x27;, &#x27;Color&#x27;, [0.122, 0.306, 0.475], &#x27;LineWidth&#x27;, 1.6);
+
+w = strcmp(a.record_type, &#x27;observation&#x27;);
+h1 = plot(a.discharge_mm_per_d(w), a.stream_length_obs_km(w), &#x27;o&#x27;, &#x27;MarkerFaceColor&#x27;, [0.91, 0.455, 0.231], &#x27;MarkerEdgeColor&#x27;, [0.91, 0.455, 0.231], &#x27;MarkerSize&#x27;, 6, &#x27;LineStyle&#x27;, &#x27;none&#x27;);
+set(gca, &#x27;XScale&#x27;, &#x27;log&#x27;);
+xlabel(&#x27;Discharge (mm/day)&#x27;);
+ylabel(&#x27;Flowing stream length (km)&#x27;);
+box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2, &#x27;Layer&#x27;, &#x27;top&#x27;);
+legend([h0, h1], {&#x27;Fit&#x27;, &#x27;Observed surveys&#x27;}, &#x27;Location&#x27;, &#x27;northwest&#x27;); legend boxoff;
+
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>
