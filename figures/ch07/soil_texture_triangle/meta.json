@@ -1,0 +1,7 @@
+{
+ "slug": "soil_texture_triangle",
+ "ch": "ch07",
+ "title": "USDA soil texture triangle",
+ "source": "Chapter 7 draft (Figure \"Texture\"); classes computed from the standard USDA texture-class rules (sand, silt, clay in % by weight)",
+ "caption": "USDA soil texture classes drawn on a sand-silt-clay triangle."
+}

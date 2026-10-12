@@ -1,0 +1,78 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Soil water retention curves: Brooks–Corey, Campbell and van Genuchten (sandy loam and silty clay)</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 7 · Soil Moisture and Infiltration</p><h1>Soil water retention curves: Brooks–Corey, Campbell and van Genuchten (sandy loam and silty clay)</h1><p>Matric potential vs volumetric water content for three retention models.</p><p class=mut>Source: Chapter 7 draft; parameters from the chapter author (Figures_4_5_6_and_Table1_2026_10_02.xlsx, RetentionCurves sheet; Clapp &amp; Hornberger 1978 / Rawls et al. parameter sets)</p><p class=mut>No external data file: values are small and embedded in the code.</p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Soil water retention curves: Brooks–Corey, Campbell and van Genuchten (sandy loam and silty clay) (Python output)'><p class=mut>Code: <a href='retention_curve_models.py'>retention_curve_models.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Soil water retention curves: Brooks–Corey, Campbell and van Genuchten (sandy loam and silty clay)
+Chapter 7 draft; parameters from the chapter author (Figures_4_5_6_and_Table1_2026_10_02.xlsx, RetentionCurves sheet; Clapp &amp; Hornberger 1978 / Rawls et al. parameter sets)
+Run: python3 retention_curve_models.py -&gt; figure_python.png&quot;&quot;&quot;
+import numpy as np, matplotlib
+matplotlib.use(&quot;Agg&quot;); import matplotlib.pyplot as plt
+# Parameters (RetentionCurves sheet). psi_ae = air-entry (cm); b = pore-size exponent.
+soils = {&quot;Sandy loam&quot;: dict(phi=0.435, thr=0.06, psi_ae=21.8, b_bc=3.9, b_camp=4.9, alpha=0.025, n=1.3),
+         &quot;Silty clay&quot;: dict(phi=0.492, thr=0.241, psi_ae=49.0, b_bc=4.4, b_camp=10.4, alpha=0.01, n=1.3)}
+def brooks(th, s):  se = (th - s[&quot;thr&quot;]) / (s[&quot;phi&quot;] - s[&quot;thr&quot;]); return s[&quot;psi_ae&quot;] * se ** (-s[&quot;b_bc&quot;])
+def campbell(th, s): return s[&quot;psi_ae&quot;] * (th / s[&quot;phi&quot;]) ** (-s[&quot;b_camp&quot;])
+def vang(th, s):
+    se = (th - s[&quot;thr&quot;]) / (s[&quot;phi&quot;] - s[&quot;thr&quot;]); m = 1 - 1 / s[&quot;n&quot;]
+    return (se ** (-1 / m) - 1) ** (1 / s[&quot;n&quot;]) / s[&quot;alpha&quot;]
+fig, axes = plt.subplots(1, 2, figsize=(10, 4.6), sharey=True)
+for ax, (name, s) in zip(axes, soils.items()):
+    th = np.linspace(s[&quot;thr&quot;] + 0.01, s[&quot;phi&quot;] - 0.002, 400)
+    ax.plot(th, brooks(th, s), color=&quot;#1f4e79&quot;, lw=2, label=&quot;Brooks–Corey&quot;)
+    ax.plot(th, campbell(th[th &gt; 0.01], s), color=&quot;#e8743b&quot;, lw=2, ls=&quot;--&quot;, label=&quot;Campbell&quot;) if False else ax.plot(th, campbell(th, s), color=&quot;#e8743b&quot;, lw=2, ls=&quot;--&quot;, label=&quot;Campbell&quot;)
+    ax.plot(th, vang(th, s), color=&quot;#2e8b57&quot;, lw=2, ls=&quot;:&quot;, label=&quot;van Genuchten&quot;)
+    ax.axhline(340, color=&quot;grey&quot;, lw=0.8, ls=&quot;:&quot;); ax.axhline(15300, color=&quot;grey&quot;, lw=0.8, ls=&quot;:&quot;)
+    ax.set_yscale(&quot;log&quot;); ax.set_ylim(1, 1e7); ax.set_title(name, loc=&quot;left&quot;, fontsize=10)
+    ax.set_xlabel(&quot;Volumetric water content, θ (m³/m³)&quot;); ax.grid(alpha=0.25)
+    for sp in (&quot;top&quot;, &quot;right&quot;): ax.spines[sp].set_visible(False)
+axes[0].set_ylabel(&quot;Matric potential magnitude, |ψ| (cm)&quot;); axes[0].legend(frameon=False)
+fig.tight_layout(); fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Soil water retention curves: Brooks–Corey, Campbell and van Genuchten (sandy loam and silty clay) (R output)'><p class=mut>Code: <a href='retention_curve_models.R'>retention_curve_models.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Soil water retention curves: Brooks–Corey, Campbell and van Genuchten (sandy loam and silty clay)
+# Chapter 7 draft; parameters from the chapter author (Figures_4_5_6_and_Table1_2026_10_02.xlsx, RetentionCurves sheet; Clapp &amp; Hornberger 1978 / Rawls et al. parameter sets)
+# Run: Rscript retention_curve_models.R -&gt; figure_r.png (base R, no packages)
+soils &lt;- list(&quot;Sandy loam&quot; = c(phi = 0.435, thr = 0.06, psi_ae = 21.8, b_bc = 3.9, b_camp = 4.9, alpha = 0.025, n = 1.3),
+              &quot;Silty clay&quot; = c(phi = 0.492, thr = 0.241, psi_ae = 49, b_bc = 4.4, b_camp = 10.4, alpha = 0.01, n = 1.3))
+brooks  &lt;- function(th, s) { se &lt;- (th - s[&quot;thr&quot;]) / (s[&quot;phi&quot;] - s[&quot;thr&quot;]); s[&quot;psi_ae&quot;] * se^(-s[&quot;b_bc&quot;]) }
+campbell &lt;- function(th, s) s[&quot;psi_ae&quot;] * (th / s[&quot;phi&quot;])^(-s[&quot;b_camp&quot;])
+vang &lt;- function(th, s) { se &lt;- (th - s[&quot;thr&quot;]) / (s[&quot;phi&quot;] - s[&quot;thr&quot;]); m &lt;- 1 - 1 / s[&quot;n&quot;]; (se^(-1 / m) - 1)^(1 / s[&quot;n&quot;]) / s[&quot;alpha&quot;] }
+png(&quot;figure_r.png&quot;, width = 1500, height = 690, res = 150)
+par(mfrow = c(1, 2), mar = c(4.5, 4.8, 2, 1), las = 1)
+for (nm in names(soils)) {
+  s &lt;- soils[[nm]]; th &lt;- seq(s[&quot;thr&quot;] + 0.01, s[&quot;phi&quot;] - 0.002, length.out = 400)
+  plot(NA, xlim = range(th), ylim = c(1, 1e7), log = &quot;y&quot;, xlab = &quot;Volumetric water content, θ (m³/m³)&quot;,
+       ylab = if (nm == &quot;Sandy loam&quot;) &quot;Matric potential magnitude, |ψ| (cm)&quot; else &quot;&quot;, bty = &quot;l&quot;, yaxt = &quot;n&quot;)
+  axis(2, at = 10^(0:7), labels = c(&quot;1&quot;, &quot;10&quot;, &quot;100&quot;, &quot;1e3&quot;, &quot;1e4&quot;, &quot;1e5&quot;, &quot;1e6&quot;, &quot;1e7&quot;)); grid(col = &quot;grey88&quot;)
+  abline(h = c(340, 15300), lty = 3, col = &quot;grey50&quot;)
+  lines(th, brooks(th, s), col = &quot;#1f4e79&quot;, lwd = 2); lines(th, campbell(th, s), col = &quot;#e8743b&quot;, lwd = 2, lty = 2)
+  lines(th, vang(th, s), col = &quot;#2e8b57&quot;, lwd = 2, lty = 3)
+  mtext(nm, side = 3, adj = 0, font = 2, cex = 0.8, line = 0.5)
+  if (nm == &quot;Sandy loam&quot;) legend(&quot;topright&quot;, bty = &quot;n&quot;, legend = c(&quot;Brooks–Corey&quot;, &quot;Campbell&quot;, &quot;van Genuchten&quot;), col = c(&quot;#1f4e79&quot;, &quot;#e8743b&quot;, &quot;#2e8b57&quot;), lty = 1:3, lwd = 2)
+}
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Soil water retention curves: Brooks–Corey, Campbell and van Genuchten (sandy loam and silty clay) (MATLAB output)'><p class=mut>Code: <a href='retention_curve_models.m'>retention_curve_models.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Soil water retention curves: Brooks–Corey, Campbell and van Genuchten (sandy loam and silty clay)
+% Chapter 7 draft; parameters from the chapter author (Figures_4_5_6_and_Table1_2026_10_02.xlsx, RetentionCurves sheet; Clapp &amp; Hornberger 1978 / Rawls et al. parameter sets)
+% Run: run retention_curve_models.m -&gt; figure_matlab.png (MATLAB or GNU Octave)
+clear; close all;
+% Parameters (RetentionCurves sheet). psi_ae = air-entry (cm); b = pore-size exponent.
+names = {&#x27;Sandy loam&#x27;, &#x27;Silty clay&#x27;};
+phi = [0.435 0.492]; thr = [0.06 0.241]; psi_ae = [21.8 49]; b_bc = [3.9 4.4]; b_camp = [4.9 10.4]; alpha = [0.025 0.01]; n = [1.3 1.3];
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 1000 460], &#x27;Color&#x27;, &#x27;w&#x27;);
+for i = 1:2
+  subplot(1, 2, i); hold on;
+  th = linspace(thr(i) + 0.01, phi(i) - 0.002, 400);
+  se = (th - thr(i)) / (phi(i) - thr(i)); m = 1 - 1 / n(i);
+  h1 = plot(th, psi_ae(i) * se.^(-b_bc(i)), &#x27;-&#x27;, &#x27;Color&#x27;, [0.122 0.306 0.475], &#x27;LineWidth&#x27;, 2);
+  h2 = plot(th, psi_ae(i) * (th / phi(i)).^(-b_camp(i)), &#x27;--&#x27;, &#x27;Color&#x27;, [0.91 0.455 0.231], &#x27;LineWidth&#x27;, 2);
+  h3 = plot(th, (se.^(-1 / m) - 1).^(1 / n(i)) / alpha(i), &#x27;:&#x27;, &#x27;Color&#x27;, [0.18 0.545 0.341], &#x27;LineWidth&#x27;, 2);
+  plot(xlim, [340 340], &#x27;:&#x27;, &#x27;Color&#x27;, [0.5 0.5 0.5]); plot(xlim, [15300 15300], &#x27;:&#x27;, &#x27;Color&#x27;, [0.5 0.5 0.5]);
+  set(gca, &#x27;YScale&#x27;, &#x27;log&#x27;); ylim([1 1e7]); xlabel(&#x27;Volumetric water content, \theta (m^3/m^3)&#x27;);
+  if i == 1, ylabel(&#x27;Matric potential magnitude, |\psi| (cm)&#x27;); legend([h1 h2 h3], {&#x27;Brooks-Corey&#x27;, &#x27;Campbell&#x27;, &#x27;van Genuchten&#x27;}, &#x27;Location&#x27;, &#x27;northeast&#x27;); legend boxoff; end
+  title(names{i}, &#x27;FontSize&#x27;, 10); box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2);
+end
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

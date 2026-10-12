@@ -1,0 +1,138 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>USDA soil texture triangle</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 7 · Soil Moisture and Infiltration</p><h1>USDA soil texture triangle</h1><p>USDA soil texture classes drawn on a sand-silt-clay triangle.</p><p class=mut>Source: Chapter 7 draft (Figure &quot;Texture&quot;); classes computed from the standard USDA texture-class rules (sand, silt, clay in % by weight)</p><p class=mut>No external data file: values are small and embedded in the code.</p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='USDA soil texture triangle (Python output)'><p class=mut>Code: <a href='soil_texture_triangle.py'>soil_texture_triangle.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;USDA soil texture triangle
+Chapter 7 draft (Figure &quot;Texture&quot;); classes computed from the standard USDA texture-class rules (sand, silt, clay in % by weight)
+Run: python3 soil_texture_triangle.py -&gt; figure_python.png&quot;&quot;&quot;
+import numpy as np, matplotlib
+matplotlib.use(&quot;Agg&quot;); import matplotlib.pyplot as plt
+names = [&quot;Sand&quot;, &quot;Loamy sand&quot;, &quot;Sandy loam&quot;, &quot;Loam&quot;, &quot;Silt loam&quot;, &quot;Silt&quot;, &quot;Sandy clay loam&quot;, &quot;Clay loam&quot;, &quot;Silty clay loam&quot;, &quot;Sandy clay&quot;, &quot;Silty clay&quot;, &quot;Clay&quot;]
+def classify(sand, silt, clay):
+    &quot;&quot;&quot;USDA texture class index (0-11) from percent sand, silt, clay (rules as in the NRCS soil-texture calculator).&quot;&quot;&quot;
+    c = np.full(np.shape(sand), -1)
+    rules = [
+        (0,  silt + 1.5 * clay &lt; 15),
+        (1,  (silt + 1.5 * clay &gt;= 15) &amp; (silt + 2 * clay &lt; 30)),
+        (2,  ((clay &gt;= 7) &amp; (clay &lt; 20) &amp; (sand &gt; 52) &amp; (silt + 2 * clay &gt;= 30)) | ((clay &lt; 7) &amp; (silt &lt; 50) &amp; (silt + 2 * clay &gt;= 30))),
+        (3,  (clay &gt;= 7) &amp; (clay &lt; 27) &amp; (silt &gt;= 28) &amp; (silt &lt; 50) &amp; (sand &lt;= 52)),
+        (4,  ((silt &gt;= 50) &amp; (clay &gt;= 12) &amp; (clay &lt; 27)) | ((silt &gt;= 50) &amp; (silt &lt; 80) &amp; (clay &lt; 12))),
+        (5,  (silt &gt;= 80) &amp; (clay &lt; 12)),
+        (6,  (clay &gt;= 20) &amp; (clay &lt; 35) &amp; (silt &lt; 28) &amp; (sand &gt; 45)),
+        (7,  (clay &gt;= 27) &amp; (clay &lt; 40) &amp; (sand &gt; 20) &amp; (sand &lt;= 45)),
+        (8,  (clay &gt;= 27) &amp; (clay &lt; 40) &amp; (sand &lt;= 20)),
+        (9,  (clay &gt;= 35) &amp; (sand &gt; 45)),
+        (10, (clay &gt;= 40) &amp; (silt &gt;= 40)),
+        (11, (clay &gt;= 40) &amp; (sand &lt;= 45) &amp; (silt &lt; 40))]
+    for k, m in rules: c = np.where((c &lt; 0) &amp; m, k, c)
+    return c
+# Triangle geometry: clay at the apex, sand at lower left, silt at lower right.
+H = np.sqrt(3) / 2
+xs, ys = np.meshgrid(np.linspace(0, 1, 900), np.linspace(0, H, 780))
+clay = 100 * ys / H; silt = 100 * (xs - 0.5 * clay / 100); sand = 100 - clay - silt
+inside = (clay &gt;= 0) &amp; (silt &gt;= 0) &amp; (sand &gt;= 0)
+cls = np.where(inside, classify(sand, silt, clay), np.nan)
+fig, ax = plt.subplots(figsize=(7.5, 6.6))
+ax.pcolormesh(xs, ys, cls, cmap=plt.get_cmap(&quot;Set3&quot;, 12), vmin=-0.5, vmax=11.5, shading=&quot;auto&quot;)
+ax.plot([0, 1, 0.5, 0], [0, 0, H, 0], &quot;k-&quot;, lw=1.5)
+for k, n in enumerate(names):
+    m = cls == k
+    if m.any(): ax.text(xs[m].mean(), ys[m].mean(), n.replace(&quot; &quot;, &quot;\n&quot;) if len(n) &gt; 9 else n, ha=&quot;center&quot;, va=&quot;center&quot;, fontsize=7.5 if k not in (0, 1, 5) else 6.5)
+for v in range(10, 100, 10):    # edge tick labels
+    ax.text(0.5 * v / 100 - 0.035, H * v / 100, str(v), fontsize=7, ha=&quot;center&quot;)                      # clay, left edge
+    ax.text(1 - v / 100 + 0.0, -0.03, str(v), fontsize=7, ha=&quot;center&quot;)                                # sand, bottom edge (increases to the left)
+    ax.text(1 - 0.5 * v / 100 + 0.035, H * v / 100, str(100 - v), fontsize=7, ha=&quot;center&quot;) if False else ax.text(1 - 0.5 * (100 - v) / 100 + 0.035, H * (100 - v) / 100, str(v), fontsize=7, ha=&quot;center&quot;)  # silt, right edge
+ax.text(0.2, 0.5 * H + 0.05, &quot;Clay (%)&quot;, rotation=60, ha=&quot;center&quot;, fontsize=9, fontweight=&quot;bold&quot;)
+ax.text(0.5, -0.08, &quot;Sand (%)&quot;, ha=&quot;center&quot;, fontsize=9, fontweight=&quot;bold&quot;)
+ax.text(0.8, 0.5 * H + 0.05, &quot;Silt (%)&quot;, rotation=-60, ha=&quot;center&quot;, fontsize=9, fontweight=&quot;bold&quot;)
+ax.set_aspect(&quot;equal&quot;); ax.axis(&quot;off&quot;); ax.set_xlim(-0.08, 1.08); ax.set_ylim(-0.12, H + 0.05)
+fig.tight_layout(); fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='USDA soil texture triangle (R output)'><p class=mut>Code: <a href='soil_texture_triangle.R'>soil_texture_triangle.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># USDA soil texture triangle
+# Chapter 7 draft (Figure &quot;Texture&quot;); classes computed from the standard USDA texture-class rules (sand, silt, clay in % by weight)
+# Run: Rscript soil_texture_triangle.R -&gt; figure_r.png (base R, no packages)
+nm &lt;- c(&quot;Sand&quot;, &quot;Loamy sand&quot;, &quot;Sandy loam&quot;, &quot;Loam&quot;, &quot;Silt loam&quot;, &quot;Silt&quot;, &quot;Sandy clay loam&quot;, &quot;Clay loam&quot;, &quot;Silty clay loam&quot;, &quot;Sandy clay&quot;, &quot;Silty clay&quot;, &quot;Clay&quot;)
+classify &lt;- function(sand, silt, clay) {   # USDA texture class index (1-12) from percent sand, silt, clay
+  cl &lt;- rep(NA_integer_, length(sand))
+  rules &lt;- list(
+    silt + 1.5 * clay &lt; 15,
+    silt + 1.5 * clay &gt;= 15 &amp; silt + 2 * clay &lt; 30,
+    (clay &gt;= 7 &amp; clay &lt; 20 &amp; sand &gt; 52 &amp; silt + 2 * clay &gt;= 30) | (clay &lt; 7 &amp; silt &lt; 50 &amp; silt + 2 * clay &gt;= 30),
+    clay &gt;= 7 &amp; clay &lt; 27 &amp; silt &gt;= 28 &amp; silt &lt; 50 &amp; sand &lt;= 52,
+    (silt &gt;= 50 &amp; clay &gt;= 12 &amp; clay &lt; 27) | (silt &gt;= 50 &amp; silt &lt; 80 &amp; clay &lt; 12),
+    silt &gt;= 80 &amp; clay &lt; 12,
+    clay &gt;= 20 &amp; clay &lt; 35 &amp; silt &lt; 28 &amp; sand &gt; 45,
+    clay &gt;= 27 &amp; clay &lt; 40 &amp; sand &gt; 20 &amp; sand &lt;= 45,
+    clay &gt;= 27 &amp; clay &lt; 40 &amp; sand &lt;= 20,
+    clay &gt;= 35 &amp; sand &gt; 45,
+    clay &gt;= 40 &amp; silt &gt;= 40,
+    clay &gt;= 40 &amp; sand &lt;= 45 &amp; silt &lt; 40)
+  for (k in seq_along(rules)) cl[is.na(cl) &amp; rules[[k]]] &lt;- k
+  cl
+}
+H &lt;- sqrt(3) / 2
+gx &lt;- seq(0, 1, length.out = 600); gy &lt;- seq(0, H, length.out = 520)
+g &lt;- expand.grid(x = gx, y = gy)
+clay &lt;- 100 * g$y / H; silt &lt;- 100 * (g$x - 0.5 * clay / 100); sand &lt;- 100 - clay - silt
+ins &lt;- clay &gt;= 0 &amp; silt &gt;= 0 &amp; sand &gt;= 0
+cls &lt;- rep(NA_integer_, nrow(g)); cls[ins] &lt;- classify(sand[ins], silt[ins], clay[ins])
+cols &lt;- c(&quot;#8dd3c7&quot;, &quot;#ffffb3&quot;, &quot;#bebada&quot;, &quot;#fb8072&quot;, &quot;#80b1d3&quot;, &quot;#fdb462&quot;, &quot;#b3de69&quot;, &quot;#fccde5&quot;, &quot;#d9d9d9&quot;, &quot;#bc80bd&quot;, &quot;#ccebc5&quot;, &quot;#ffed6f&quot;)
+png(&quot;figure_r.png&quot;, width = 1125, height = 990, res = 150); par(mar = c(0.5, 0.5, 0.5, 0.5))
+plot(NA, xlim = c(-0.08, 1.08), ylim = c(-0.12, H + 0.05), asp = 1, axes = FALSE, xlab = &quot;&quot;, ylab = &quot;&quot;)
+image(gx, gy, matrix(cls, nrow = length(gx)), col = cols, breaks = 0.5:12.5, add = TRUE)
+lines(c(0, 1, 0.5, 0), c(0, 0, H, 0), lwd = 2)
+for (k in 1:12) { mm &lt;- which(cls == k); if (length(mm)) text(mean(g$x[mm]), mean(g$y[mm]), if (nchar(nm[k]) &gt; 9) gsub(&quot; &quot;, &quot;\n&quot;, nm[k]) else nm[k], cex = if (k %in% c(1, 2, 6)) 0.5 else 0.6) }
+for (v in seq(10, 90, 10)) {
+  text(0.5 * v / 100 - 0.035, H * v / 100, v, cex = 0.5); text(1 - v / 100, -0.03, v, cex = 0.5)
+  text(1 - 0.5 * (100 - v) / 100 + 0.035, H * (100 - v) / 100, v, cex = 0.5)
+}
+text(0.2, 0.5 * H + 0.05, &quot;Clay (%)&quot;, srt = 60, font = 2, cex = 0.8); text(0.5, -0.08, &quot;Sand (%)&quot;, font = 2, cex = 0.8); text(0.8, 0.5 * H + 0.05, &quot;Silt (%)&quot;, srt = -60, font = 2, cex = 0.8)
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='USDA soil texture triangle (MATLAB output)'><p class=mut>Code: <a href='soil_texture_triangle.m'>soil_texture_triangle.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% USDA soil texture triangle
+% Chapter 7 draft (Figure &quot;Texture&quot;); classes computed from the standard USDA texture-class rules (sand, silt, clay in % by weight)
+% Run: run soil_texture_triangle.m -&gt; figure_matlab.png (MATLAB or GNU Octave)
+clear; close all;
+nm = {&#x27;Sand&#x27;, &#x27;Loamy sand&#x27;, &#x27;Sandy loam&#x27;, &#x27;Loam&#x27;, &#x27;Silt loam&#x27;, &#x27;Silt&#x27;, &#x27;Sandy clay loam&#x27;, &#x27;Clay loam&#x27;, &#x27;Silty clay loam&#x27;, &#x27;Sandy clay&#x27;, &#x27;Silty clay&#x27;, &#x27;Clay&#x27;};
+H = sqrt(3) / 2;
+[xs, ys] = meshgrid(linspace(0, 1, 600), linspace(0, H, 520));
+clay = 100 * ys / H; silt = 100 * (xs - 0.5 * clay / 100); sand = 100 - clay - silt;
+inside = clay &gt;= 0 &amp; silt &gt;= 0 &amp; sand &gt;= 0;
+rules = cell(1, 12);
+rules{1}  = silt + 1.5 * clay &lt; 15;
+rules{2}  = silt + 1.5 * clay &gt;= 15 &amp; silt + 2 * clay &lt; 30;
+rules{3}  = (clay &gt;= 7 &amp; clay &lt; 20 &amp; sand &gt; 52 &amp; silt + 2 * clay &gt;= 30) | (clay &lt; 7 &amp; silt &lt; 50 &amp; silt + 2 * clay &gt;= 30);
+rules{4}  = clay &gt;= 7 &amp; clay &lt; 27 &amp; silt &gt;= 28 &amp; silt &lt; 50 &amp; sand &lt;= 52;
+rules{5}  = (silt &gt;= 50 &amp; clay &gt;= 12 &amp; clay &lt; 27) | (silt &gt;= 50 &amp; silt &lt; 80 &amp; clay &lt; 12);
+rules{6}  = silt &gt;= 80 &amp; clay &lt; 12;
+rules{7}  = clay &gt;= 20 &amp; clay &lt; 35 &amp; silt &lt; 28 &amp; sand &gt; 45;
+rules{8}  = clay &gt;= 27 &amp; clay &lt; 40 &amp; sand &gt; 20 &amp; sand &lt;= 45;
+rules{9}  = clay &gt;= 27 &amp; clay &lt; 40 &amp; sand &lt;= 20;
+rules{10} = clay &gt;= 35 &amp; sand &gt; 45;
+rules{11} = clay &gt;= 40 &amp; silt &gt;= 40;
+rules{12} = clay &gt;= 40 &amp; sand &lt;= 45 &amp; silt &lt; 40;
+cls = nan(size(xs));
+for k = 1:12, cls(isnan(cls) &amp; rules{k} &amp; inside) = k; end
+cols = [0.553 0.827 0.78; 1 1 0.702; 0.745 0.729 0.855; 0.984 0.502 0.447; 0.502 0.694 0.827; 0.992 0.706 0.384; 0.702 0.871 0.412; 0.988 0.804 0.898; 0.851 0.851 0.851; 0.737 0.502 0.741; 0.8 0.922 0.773; 1 0.929 0.435];
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 750 660], &#x27;Color&#x27;, &#x27;w&#x27;); hold on;
+rgb = ones([size(cls) 3]);
+for k = 1:12, mk = cls == k; for c = 1:3, tmp = rgb(:,:,c); tmp(mk) = cols(k, c); rgb(:,:,c) = tmp; end, end
+image([0 1], [0 H], rgb); set(gca, &#x27;YDir&#x27;, &#x27;normal&#x27;);
+plot([0 1 0.5 0], [0 0 H 0], &#x27;k-&#x27;, &#x27;LineWidth&#x27;, 1.5);
+for k = 1:12
+  mk = cls == k; if any(mk(:)), text(mean(xs(mk)), mean(ys(mk)), strrep(nm{k}, &#x27; &#x27;, char(10)), &#x27;HorizontalAlignment&#x27;, &#x27;center&#x27;, &#x27;FontSize&#x27;, 7); end
+end
+for v = 10:10:90
+  text(0.5 * v / 100 - 0.035, H * v / 100, num2str(v), &#x27;FontSize&#x27;, 6, &#x27;HorizontalAlignment&#x27;, &#x27;center&#x27;);
+  text(1 - v / 100, -0.03, num2str(v), &#x27;FontSize&#x27;, 6, &#x27;HorizontalAlignment&#x27;, &#x27;center&#x27;);
+  text(1 - 0.5 * (100 - v) / 100 + 0.035, H * (100 - v) / 100, num2str(v), &#x27;FontSize&#x27;, 6, &#x27;HorizontalAlignment&#x27;, &#x27;center&#x27;);
+end
+text(0.2, 0.5 * H + 0.05, &#x27;Clay (%)&#x27;, &#x27;Rotation&#x27;, 60, &#x27;FontWeight&#x27;, &#x27;bold&#x27;, &#x27;HorizontalAlignment&#x27;, &#x27;center&#x27;);
+text(0.5, -0.08, &#x27;Sand (%)&#x27;, &#x27;FontWeight&#x27;, &#x27;bold&#x27;, &#x27;HorizontalAlignment&#x27;, &#x27;center&#x27;);
+text(0.8, 0.5 * H + 0.05, &#x27;Silt (%)&#x27;, &#x27;Rotation&#x27;, -60, &#x27;FontWeight&#x27;, &#x27;bold&#x27;, &#x27;HorizontalAlignment&#x27;, &#x27;center&#x27;);
+axis equal off; xlim([-0.08 1.08]); ylim([-0.12 H + 0.05]);
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

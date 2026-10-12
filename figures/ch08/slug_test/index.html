@@ -1,0 +1,94 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Slug test: normalized head recovery in high- and low-K wells</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 8 · Groundwater</p><h1>Slug test: normalized head recovery in high- and low-K wells</h1><p>Hvorslev-type exponential head recovery for two wells (T37 = 3 and 30 min).</p><p class=mut>Source: Chapter 8 draft; author code (in a Word comment)</p><p class=mut>No external data file: values are small and embedded in the code.</p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Slug test: normalized head recovery in high- and low-K wells (Python output)'><p class=mut>Code: <a href='slug_test.py'>slug_test.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Chapter 8 - Idealized slug-test response (Hvorslev) for a high-K and a low-K well.
+Code from a comment in the Groundwater draft (J. Gannon, &#x27;code for this is below (claude)&#x27;).&quot;&quot;&quot;
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ---- Parameters (edit these) ----
+T37_HIGH = 3      # min, basic time lag for high-K well
+T37_LOW = 30      # min, basic time lag for low-K well
+tmin, tmax = -20, 120   # min relative to slug
+BLUE, ORANGE, MUTED = &quot;#2a78d6&quot;, &quot;#eb6834&quot;, &quot;#898781&quot;
+
+def response(T37, t_after):
+    &quot;&quot;&quot;Idealized Hvorslev response: steady before t=0, instant rise, then H/H0 = exp(-t/T37).&quot;&quot;&quot;
+    t = np.concatenate(([tmin, 0, 0], t_after))
+    h = np.concatenate(([0, 0, 1], np.exp(-t_after / T37)))
+    return t, h
+
+t_after = np.linspace(0, tmax, 500)[1:]
+fig, ax = plt.subplots(figsize=(8, 4.5))
+for T37, color, label in [(T37_HIGH, BLUE, &quot;High K well&quot;), (T37_LOW, ORANGE, &quot;Low K well&quot;)]:
+    t, h = response(T37, t_after)
+    ax.plot(t, h, color=color, lw=2, label=label)
+    ax.plot([T37, T37], [-0.05, 0.37], color=color, ls=&quot;--&quot;, lw=1.5)
+    ax.plot(T37, 0.37, &quot;o&quot;, color=color, mec=&quot;white&quot;, mew=1.5, ms=8, zorder=5)
+ax.axvline(0, color=MUTED, ls=&quot;--&quot;, lw=1)
+ax.hlines(0.37, 0, T37_LOW, color=MUTED, ls=&quot;--&quot;, lw=1)
+ax.text(0, 1.22, &quot;slug added&quot;, ha=&quot;center&quot;, va=&quot;bottom&quot;, fontsize=9, fontweight=&quot;bold&quot;)
+ax.text(8, 0.14, f&quot;T37 = {T37_HIGH} min&quot;, color=BLUE, fontsize=9, fontweight=&quot;bold&quot;)
+ax.text(36, 0.52, f&quot;T37 = {T37_LOW} min&quot;, color=ORANGE, fontsize=9, fontweight=&quot;bold&quot;)
+ax.text(tmin + 1, 0.39, &quot;H/H0 = 0.37&quot;, color=MUTED, fontsize=9)
+ax.text(tmin + 1, 0.03, &quot;steady&quot;, color=MUTED, fontsize=9)
+ax.set_xlim(tmin, tmax); ax.set_ylim(-0.05, 1.2)
+ax.set_yticks(np.arange(0, 1.01, 0.2))
+ax.set_xlabel(&quot;Time relative to slug (min)&quot;); ax.set_ylabel(&quot;Head above static level, H/H0&quot;)
+ax.grid(alpha=0.25)
+ax.spines[[&quot;top&quot;, &quot;right&quot;]].set_visible(False)
+ax.legend(frameon=False, loc=&quot;upper right&quot;)
+fig.tight_layout()
+fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Slug test: normalized head recovery in high- and low-K wells (R output)'><p class=mut>Code: <a href='slug_test.R'>slug_test.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Chapter 8 - Idealized slug-test response (Hvorslev) for a high-K and a low-K well
+T37_HIGH &lt;- 3; T37_LOW &lt;- 30      # min, basic time lag
+tmin &lt;- -20; tmax &lt;- 120
+BLUE &lt;- &quot;#2a78d6&quot;; ORANGE &lt;- &quot;#eb6834&quot;; MUTED &lt;- &quot;#898781&quot;
+response &lt;- function(T37) {          # steady, instant rise at t = 0, then H/H0 = exp(-t/T37)
+  ta &lt;- seq(0, tmax, length.out = 500)[-1]
+  list(t = c(tmin, 0, 0, ta), h = c(0, 0, 1, exp(-ta / T37)))
+}
+png(&quot;figure_r.png&quot;, width = 1200, height = 675, res = 150)
+par(mar = c(4.5, 4.5, 1, 1), bty = &quot;n&quot;)
+plot(NA, xlim = c(tmin, tmax), ylim = c(-0.05, 1.2), xlab = &quot;Time relative to slug (min)&quot;, ylab = &quot;Head above static level, H/H0&quot;, yaxt = &quot;n&quot;)
+axis(2, at = seq(0, 1, 0.2)); grid(col = &quot;grey90&quot;, lty = 1)
+abline(v = 0, lty = 2, col = MUTED); segments(0, 0.37, T37_LOW, 0.37, lty = 2, col = MUTED)
+for (k in list(list(T37_HIGH, BLUE), list(T37_LOW, ORANGE))) {
+  r &lt;- response(k[[1]]); lines(r$t, r$h, col = k[[2]], lwd = 2.5)
+  segments(k[[1]], -0.05, k[[1]], 0.37, lty = 2, col = k[[2]]); points(k[[1]], 0.37, pch = 21, bg = k[[2]], col = &quot;white&quot;, cex = 1.6)
+}
+text(0, 1.2, &quot;slug added&quot;, font = 2, cex = 0.8, adj = c(0.5, 1))
+text(8, 0.14, sprintf(&quot;T37 = %d min&quot;, T37_HIGH), col = BLUE, font = 2, cex = 0.8, adj = 0)
+text(36, 0.52, sprintf(&quot;T37 = %d min&quot;, T37_LOW), col = ORANGE, font = 2, cex = 0.8, adj = 0)
+text(tmin + 1, 0.39, &quot;H/H0 = 0.37&quot;, col = MUTED, cex = 0.8, adj = 0); text(tmin + 1, 0.03, &quot;steady&quot;, col = MUTED, cex = 0.8, adj = 0)
+legend(&quot;topright&quot;, bty = &quot;n&quot;, lwd = 2.5, col = c(BLUE, ORANGE), legend = c(&quot;High K well&quot;, &quot;Low K well&quot;))
+dev.off()
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Slug test: normalized head recovery in high- and low-K wells (MATLAB output)'><p class=mut>Code: <a href='slug_test.m'>slug_test.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Chapter 8 - Idealized slug-test response (Hvorslev) for a high-K and a low-K well
+T37_HIGH = 3; T37_LOW = 30;       % min, basic time lag
+tmin = -20; tmax = 120;
+BLUE = [0.165 0.47 0.839]; ORANGE = [0.922 0.408 0.204]; MUTED = [0.537 0.529 0.506];
+ta = linspace(0, tmax, 500); ta = ta(2:end);
+fig = figure(&#x27;Position&#x27;, [100 100 800 450]); hold on
+plot([0 0], [-0.05 1.2], &#x27;--&#x27;, &#x27;Color&#x27;, MUTED); plot([0 T37_LOW], [0.37 0.37], &#x27;--&#x27;, &#x27;Color&#x27;, MUTED);
+T37s = [T37_HIGH T37_LOW]; cols = [BLUE; ORANGE]; h = zeros(1, 2);
+for k = 1:2
+    t = [tmin 0 0 ta]; hh = [0 0 1 exp(-ta / T37s(k))];
+    h(k) = plot(t, hh, &#x27;Color&#x27;, cols(k,:), &#x27;LineWidth&#x27;, 2);
+    plot([T37s(k) T37s(k)], [-0.05 0.37], &#x27;--&#x27;, &#x27;Color&#x27;, cols(k,:));
+    plot(T37s(k), 0.37, &#x27;o&#x27;, &#x27;MarkerFaceColor&#x27;, cols(k,:), &#x27;MarkerEdgeColor&#x27;, &#x27;w&#x27;, &#x27;MarkerSize&#x27;, 8);
+end
+text(0, 1.17, &#x27;slug added&#x27;, &#x27;HorizontalAlignment&#x27;, &#x27;center&#x27;, &#x27;FontWeight&#x27;, &#x27;bold&#x27;);
+text(8, 0.14, sprintf(&#x27;T37 = %d min&#x27;, T37_HIGH), &#x27;Color&#x27;, BLUE, &#x27;FontWeight&#x27;, &#x27;bold&#x27;);
+text(36, 0.52, sprintf(&#x27;T37 = %d min&#x27;, T37_LOW), &#x27;Color&#x27;, ORANGE, &#x27;FontWeight&#x27;, &#x27;bold&#x27;);
+text(tmin + 1, 0.39, &#x27;H/H0 = 0.37&#x27;, &#x27;Color&#x27;, MUTED); text(tmin + 1, 0.03, &#x27;steady&#x27;, &#x27;Color&#x27;, MUTED);
+xlim([tmin tmax]); ylim([-0.05 1.2]); set(gca, &#x27;YTick&#x27;, 0:0.2:1); grid on; box off
+xlabel(&#x27;Time relative to slug (min)&#x27;); ylabel(&#x27;Head above static level, H/H0&#x27;);
+legend(h, {&#x27;High K well&#x27;, &#x27;Low K well&#x27;}, &#x27;Location&#x27;, &#x27;northeast&#x27;, &#x27;Box&#x27;, &#x27;off&#x27;);
+print(fig, &#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>

@@ -1,0 +1,7 @@
+{
+ "slug": "retention_curve_models",
+ "ch": "ch07",
+ "title": "Soil water retention curves: Brooks\u2013Corey, Campbell and van Genuchten (sandy loam and silty clay)",
+ "source": "Chapter 7 draft; parameters from the chapter author (Figures_4_5_6_and_Table1_2026_10_02.xlsx, RetentionCurves sheet; Clapp & Hornberger 1978 / Rawls et al. parameter sets)",
+ "caption": "Matric potential vs volumetric water content for three retention models."
+}

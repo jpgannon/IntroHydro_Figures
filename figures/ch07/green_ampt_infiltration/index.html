@@ -1,0 +1,85 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Green–Ampt infiltration under constant rainfall (silty clay)</title><style>:root{--bg:#fff;--fg:#1d2733;--mut:#5b6877;--line:#d8dee6;--acc:#1f5f8b;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--fg:#e6ebf0;--mut:#9aa8b6;--line:#2b3641;--acc:#7fb7e6;--card:#18212b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 64px}a{color:var(--acc)}h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:2em 0 .6em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{display:block;border:1px solid var(--line);border-radius:8px;background:var(--card);text-decoration:none;color:inherit;overflow:hidden}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;display:block}.card span{display:block;padding:8px 10px;font-size:.9rem}
+.tabs{display:flex;gap:6px;margin:16px 0 0}.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font:inherit}
+.tabs button[aria-selected=true]{background:var(--acc);color:#fff;border-color:var(--acc)}.panel{border:1px solid var(--line);padding:12px;border-radius:0 6px 6px 6px}
+.panel img{max-width:100%;height:auto;background:#fff;display:block;margin:0 auto 12px}pre{overflow:auto;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:6px;font-size:.82rem;line-height:1.4;max-height:520px}
+.note{border-left:4px solid var(--acc);padding:6px 12px;background:var(--card);margin:14px 0}.mut{color:var(--mut);font-size:.9rem}</style></head><body><main><p><a href='../../../index.html'>← All figures</a></p><p class=mut>Chapter 7 · Soil Moisture and Infiltration</p><h1>Green–Ampt infiltration under constant rainfall (silty clay)</h1><p>Rainfall rate, Green-Ampt infiltration capacity and actual infiltration rate vs time.</p><p class=mut>Source: Chapter 7 draft; parameters from the chapter author (Figures_4_5_6_and_Table1_2026_10_02.xlsx, GreenAmpt sheet); explicit time stepping dt = 0.02 h as in the workbook</p><p class=mut>No external data file: values are small and embedded in the code.</p><div class=tabs role=tablist><button role=tab aria-selected=true data-t=python>Python</button><button role=tab aria-selected=false data-t=r>R</button><button role=tab aria-selected=false data-t=matlab>MATLAB</button></div><div class=panel data-p=python ><img src='figure_python.png' alt='Green–Ampt infiltration under constant rainfall (silty clay) (Python output)'><p class=mut>Code: <a href='green_ampt_infiltration.py'>green_ampt_infiltration.py</a> · image: <a href='figure_python.png'>figure_python.png</a></p><pre><code>&quot;&quot;&quot;Green–Ampt infiltration under constant rainfall (silty clay)
+Chapter 7 draft; parameters from the chapter author (Figures_4_5_6_and_Table1_2026_10_02.xlsx, GreenAmpt sheet); explicit time stepping dt = 0.02 h as in the workbook
+Run: python3 green_ampt_infiltration.py -&gt; figure_python.png&quot;&quot;&quot;
+import numpy as np, matplotlib
+matplotlib.use(&quot;Agg&quot;); import matplotlib.pyplot as plt
+# Silty clay, Campbell parameters (GreenAmpt sheet). Units: mm and hours.
+phi, theta_i = 0.492, 0.37          # porosity, initial water content
+Ks = 3.72                            # saturated hydraulic conductivity (mm/hr)
+psi_f = 70.0                         # wetting-front suction head (mm) -- see note in README
+r = 10.0                             # constant rainfall rate (mm/hr)
+f0, fc, beta = 30.0, Ks, 3.0         # Horton: initial capacity, final capacity (= Ks), decay (1/hr)
+dtheta = phi - theta_i
+dt = 0.02; t = np.arange(0, 3.0 + dt / 2, dt)
+I = np.zeros_like(t); ipot = np.full_like(t, np.nan); iact = np.zeros_like(t)
+for k in range(len(t)):
+    ipot[k] = Ks * (1 + psi_f * dtheta / I[k]) if I[k] &gt; 0 else np.inf   # Green-Ampt capacity
+    iact[k] = min(r, ipot[k])
+    if k + 1 &lt; len(t): I[k + 1] = I[k] + iact[k] * dt
+horton = fc + (f0 - fc) * np.exp(-beta * t)
+
+fig, ax = plt.subplots(figsize=(7.5, 4.8))
+ax.plot(t, np.minimum(ipot, 60), color=&quot;#2e8b57&quot;, lw=2, ls=&quot;--&quot;, label=&quot;Green–Ampt capacity, $i_{pot}$&quot;)
+ax.plot(t, iact, color=&quot;#1f4e79&quot;, lw=2.4, label=&quot;Actual infiltration, $i_{act}$&quot;)
+ax.axhline(r, color=&quot;#e8743b&quot;, lw=1.6, label=&quot;Rainfall rate, r&quot;); ax.axhline(Ks, color=&quot;grey&quot;, lw=1, ls=&quot;:&quot;, label=&quot;$K_s$&quot;)
+ax.set_ylim(0, 40); ax.set_xlabel(&quot;Time (hr)&quot;); ax.set_ylabel(&quot;Rate (mm/hr)&quot;); ax.legend(frameon=False); ax.grid(alpha=0.25)
+for s in (&quot;top&quot;, &quot;right&quot;): ax.spines[s].set_visible(False)
+fig.tight_layout(); fig.savefig(&quot;figure_python.png&quot;, dpi=150)
+</code></pre></div><div class=panel data-p=r hidden><img src='figure_r.png' alt='Green–Ampt infiltration under constant rainfall (silty clay) (R output)'><p class=mut>Code: <a href='green_ampt_infiltration.R'>green_ampt_infiltration.R</a> · image: <a href='figure_r.png'>figure_r.png</a></p><pre><code># Green–Ampt infiltration under constant rainfall (silty clay)
+# Chapter 7 draft; parameters from the chapter author (Figures_4_5_6_and_Table1_2026_10_02.xlsx, GreenAmpt sheet); explicit time stepping dt = 0.02 h as in the workbook
+# Run: Rscript green_ampt_infiltration.R -&gt; figure_r.png (base R, no packages)
+# Silty clay, Campbell parameters (GreenAmpt sheet). Units: mm and hours.
+phi &lt;- 0.492; theta_i &lt;- 0.37; Ks &lt;- 3.72; psi_f &lt;- 70; r &lt;- 10
+f0 &lt;- 30; fc &lt;- Ks; beta &lt;- 3
+dtheta &lt;- phi - theta_i; dt &lt;- 0.02; t &lt;- seq(0, 3, by = dt)
+I &lt;- numeric(length(t)); ipot &lt;- numeric(length(t)); iact &lt;- numeric(length(t))
+for (k in seq_along(t)) {
+  ipot[k] &lt;- if (I[k] &gt; 0) Ks * (1 + psi_f * dtheta / I[k]) else Inf
+  iact[k] &lt;- min(r, ipot[k])
+  if (k &lt; length(t)) I[k + 1] &lt;- I[k] + iact[k] * dt
+}
+horton &lt;- fc + (f0 - fc) * exp(-beta * t)
+
+png(&quot;figure_r.png&quot;, width = 1125, height = 720, res = 150)
+par(mar = c(4.5, 4.5, 1, 1), las = 1)
+plot(NA, xlim = c(0, 3), ylim = c(0, 40), xlab = &quot;Time (hr)&quot;, ylab = &quot;Rate (mm/hr)&quot;, bty = &quot;l&quot;); grid(col = &quot;grey88&quot;)
+lines(t, pmin(ipot, 60), col = &quot;#2e8b57&quot;, lwd = 2, lty = 2); lines(t, iact, col = &quot;#1f4e79&quot;, lwd = 2.4)
+abline(h = r, col = &quot;#e8743b&quot;, lwd = 1.6); abline(h = Ks, col = &quot;grey50&quot;, lty = 3)
+legend(&quot;topright&quot;, bty = &quot;n&quot;, lwd = c(2, 2.4, 1.6, 1), lty = c(2, 1, 1, 3), col = c(&quot;#2e8b57&quot;, &quot;#1f4e79&quot;, &quot;#e8743b&quot;, &quot;grey50&quot;),
+       legend = c(&quot;Green-Ampt capacity&quot;, &quot;Actual infiltration&quot;, &quot;Rainfall rate&quot;, &quot;Ks&quot;))
+invisible(dev.off())
+</code></pre></div><div class=panel data-p=matlab hidden><img src='figure_matlab.png' alt='Green–Ampt infiltration under constant rainfall (silty clay) (MATLAB output)'><p class=mut>Code: <a href='green_ampt_infiltration.m'>green_ampt_infiltration.m</a> · image: <a href='figure_matlab.png'>figure_matlab.png</a></p><pre><code>% Green–Ampt infiltration under constant rainfall (silty clay)
+% Chapter 7 draft; parameters from the chapter author (Figures_4_5_6_and_Table1_2026_10_02.xlsx, GreenAmpt sheet); explicit time stepping dt = 0.02 h as in the workbook
+% Run: run green_ampt_infiltration.m -&gt; figure_matlab.png (MATLAB or GNU Octave)
+clear; close all;
+% Silty clay, Campbell parameters (GreenAmpt sheet). Units: mm and hours.
+phi = 0.492; theta_i = 0.37; Ks = 3.72; psi_f = 70; r = 10;
+f0 = 30; fc = Ks; beta = 3;
+dtheta = phi - theta_i; dt = 0.02; t = 0:dt:3;
+I = zeros(size(t)); ipot = zeros(size(t)); iact = zeros(size(t));
+for k = 1:numel(t)
+  if I(k) &gt; 0, ipot(k) = Ks * (1 + psi_f * dtheta / I(k)); else, ipot(k) = Inf; end
+  iact(k) = min(r, ipot(k));
+  if k &lt; numel(t), I(k + 1) = I(k) + iact(k) * dt; end
+end
+horton = fc + (f0 - fc) * exp(-beta * t);
+
+figure(&#x27;Visible&#x27;, &#x27;off&#x27;, &#x27;Position&#x27;, [100 100 750 480], &#x27;Color&#x27;, &#x27;w&#x27;); hold on;
+h1 = plot(t, min(ipot, 60), &#x27;--&#x27;, &#x27;Color&#x27;, [0.18 0.545 0.341], &#x27;LineWidth&#x27;, 2);
+h2 = plot(t, iact, &#x27;-&#x27;, &#x27;Color&#x27;, [0.122 0.306 0.475], &#x27;LineWidth&#x27;, 2.4);
+h3 = plot([0 3], [r r], &#x27;-&#x27;, &#x27;Color&#x27;, [0.91 0.455 0.231], &#x27;LineWidth&#x27;, 1.6);
+h4 = plot([0 3], [Ks Ks], &#x27;:&#x27;, &#x27;Color&#x27;, [0.5 0.5 0.5]);
+ylim([0 40]); xlim([0 3]); xlabel(&#x27;Time (hr)&#x27;); ylabel(&#x27;Rate (mm/hr)&#x27;);
+legend([h1 h2 h3 h4], {&#x27;Green-Ampt capacity&#x27;, &#x27;Actual infiltration&#x27;, &#x27;Rainfall rate&#x27;, &#x27;Ks&#x27;}, &#x27;Location&#x27;, &#x27;northeast&#x27;); legend boxoff;
+box off; grid on; set(gca, &#x27;GridAlpha&#x27;, 0.2);
+print(&#x27;-dpng&#x27;, &#x27;-r150&#x27;, &#x27;figure_matlab.png&#x27;);
+</code></pre></div><script>document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.p!==b.dataset.t)})</script></main></body></html>
